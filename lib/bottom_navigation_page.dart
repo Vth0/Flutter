@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'homepage.dart';
-import 'category_page.dart';
-// import 'cart_page.dart';
-// import 'favorite_page.dart';r
-// import 'profile_page.dart';r
+import 'package:flutter_application_smartshop/view/cart_page.dart';
+import 'package:flutter_application_smartshop/view/category_page.dart';
+import 'package:flutter_application_smartshop/view/favorite_page.dart';
+import 'package:flutter_application_smartshop/view/homepage.dart';
+import 'package:flutter_application_smartshop/view/profile/profile_page.dart';
+
 
 class BottomNavigationPage extends StatefulWidget {
   @override
@@ -17,9 +18,9 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
   final List<Widget> _pages = [
     Homepage(),
     CategoryPage(),
-    // CartPage(),
-    // FavoritePage(),
-    // ProfilePage(),
+    CartPage(),
+    FavoritePage(),
+    ProfilePage(),
   ];
 
   void onTabTapped(int index) {

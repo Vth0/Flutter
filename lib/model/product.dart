@@ -1,10 +1,10 @@
-class Phone {
+class Product {
   final String name;
   final String imageUrl;
   final double currentPrice;
   final double originalPrice;
 
-  Phone({
+  Product({
     required this.name,
     required this.imageUrl,
     required this.currentPrice,

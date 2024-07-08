@@ -18,22 +18,22 @@ class CategoryPage extends StatelessWidget {
             _buildCategoryCard(
               context,
               'Điện thoại',
-              'assets/dienthoai.jpg', // Thay bằng ảnh thật của bạn
+              'assets/dienthoai.png', 
             ),
             _buildCategoryCard(
               context,
               'Laptop',
-              'assets/laptop.jpg', // Thay bằng ảnh thật của bạn
+              'assets/laptop.png', 
             ),
             _buildCategoryCard(
               context,
               'Tablet',
-              'assets/tablet.jpg', // Thay bằng ảnh thật của bạn
+              'assets/tablet.png', 
             ),
             _buildCategoryCard(
               context,
               'Đồng hồ',
-              'assets/dongho.jpg', // Thay bằng ảnh thật của bạn
+              'assets/dongho.png', 
             ),
           ],
         ),
