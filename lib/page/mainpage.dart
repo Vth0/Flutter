@@ -4,7 +4,7 @@ import 'package:flutter_application_smartshop/page/Cart/cartwidget.dart';
 import 'package:flutter_application_smartshop/page/Categories/categorywidget.dart';
 import 'package:flutter_application_smartshop/page/Favorite/favoritewidget.dart';
 import 'package:flutter_application_smartshop/page/Home/homewidget.dart';
-import 'package:flutter_application_smartshop/page/Profile/profilewidget.dart';
+//import 'package:flutter_application_smartshop/page/Profile/profilewidget.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
