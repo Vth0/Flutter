@@ -4,6 +4,7 @@ import 'package:flutter_application_smartshop/page/Cart/cartwidget.dart';
 import 'package:flutter_application_smartshop/page/Categories/categorywidget.dart';
 import 'package:flutter_application_smartshop/page/Favorite/favoritewidget.dart';
 import 'package:flutter_application_smartshop/page/Home/homewidget.dart';
+import 'package:flutter_application_smartshop/page/Profile/profilewidget.dart';
 
 class Mainpage extends StatefulWidget {
   const Mainpage({super.key});
@@ -15,11 +16,12 @@ class Mainpage extends StatefulWidget {
 class _MainpageState extends State<Mainpage> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget> [
-    const HomeWidget(),
+    HomeWidget(),
     const CategoryWidget(),
     const CartWidget(),
     const FavoriteWidget(),
     const AccountWidget()
+    //ProfileWidget()
   ];
 
   void _onTapped(int index) {

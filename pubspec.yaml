@@ -14,11 +14,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  carousel_slider: ^4.0.0
+  shared_preferences: ^2.1.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/products/
     - assets/files/
     - assets/images/facebookicon.png
     - assets/images/googleicon.png
