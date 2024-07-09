@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'bottom_navigation_page.dart';
+import 'package:flutter_application_smartshop/page/startwidget.dart';
+
 
 void main() {
-  runApp(MyApp());
+  runApp(const MainApp());
 }
 
-class MyApp extends StatelessWidget {
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: BottomNavigationPage(),
+    return const MaterialApp(
+      home: Startwidget(),
     );
   }
 }
