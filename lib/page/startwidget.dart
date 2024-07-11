@@ -35,7 +35,7 @@ class _StartwidgetState extends State<Startwidget> {
           ),
 
           Container(
-            color: const Color.fromARGB(255, 159, 205, 244).withOpacity(0.5), // Lớp màu xanh trắng mờ
+            color: const Color.fromARGB(255, 178, 216, 249).withOpacity(0.7), // Lớp màu xanh trắng mờ
           ),
 
           const Center(
@@ -43,7 +43,7 @@ class _StartwidgetState extends State<Startwidget> {
               "SmartShop",
               style: TextStyle(
                 fontSize: 40,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: Colors.black,
               ),
             ),
