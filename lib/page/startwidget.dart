@@ -12,7 +12,6 @@ class Startwidget extends StatefulWidget {
 class _StartwidgetState extends State<Startwidget> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     
     Timer(const Duration(seconds: 2), () {
