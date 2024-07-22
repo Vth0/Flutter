@@ -20,6 +20,12 @@ class _DetailcartState extends State<Detailcart> {
     return await _databaseHelper.products();
   }
 
+  Future<double> _getTotalAmount() async {
+    List<Cart> products = await _getProducts();
+    double totalAmount = products.fold(0, (sum, item) => sum + (item.price * item.count));
+    return totalAmount;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,12 +51,49 @@ class _DetailcartState extends State<Detailcart> {
                 }
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final itemProduct = snapshot.data![index];
-                      return _buildProduct(itemProduct, context);
-                    },
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            final itemProduct = snapshot.data![index];
+                            return _buildProduct(itemProduct, context);
+                          },
+                        ),
+                      ),
+                      FutureBuilder<double>(
+                        future: _getTotalAmount(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData) {
+                            return const Text('Không thể tính tổng thanh toán');
+                          }
+
+                          final totalAmount = snapshot.data ?? 0.0;
+
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Tổng thanh toán:',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  NumberFormat('###,###.0').format(totalAmount),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 );
               },
@@ -154,11 +197,7 @@ class _DetailcartState extends State<Detailcart> {
                   ),
                   const SizedBox(height: 4.0),
                   Text('Số lượng: ${pro.count}'),
-                  Text(
-                    'Mô tả: ${pro.des}',
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  
                 ],
               ),
             ),

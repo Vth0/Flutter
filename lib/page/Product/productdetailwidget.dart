@@ -1,7 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/model/cart.dart';
 import 'package:flutter_application_smartshop/model/favorite.dart';
+import 'package:flutter_application_smartshop/page/mainpage.dart';
 import '../../data/sqlite.dart';
 import 'package:flutter_application_smartshop/model/product.dart';
 
@@ -52,6 +56,18 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
     }
   }
 
+  Future<void> _onSave(Product pro) async {
+    await dbHelper.insertProduct(Cart(
+      productID: pro.id,
+      name: pro.name,
+      des: pro.description,
+      price: pro.price,
+      img: pro.imageUrl,
+      count: 1,
+    ));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,20 +116,28 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  widget.product.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                SizedBox(
+                  width: 248,
+                  child: Text(
+                    widget.product.name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                IconButton(
-                  onPressed: () => _toggleFavorite(widget.product),
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : null,
+                SizedBox(
+                  width: 24,
+                  child: IconButton(
+                    onPressed: () => _toggleFavorite(widget.product),
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : null,
+                    ),
+                    padding: const EdgeInsets.all(8.0),
                   ),
-                  padding: const EdgeInsets.all(8.0),
                 ),
               ],
             ),
@@ -145,10 +169,14 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              '- Các thông số kỹ thuật của sản phẩm sẽ được hiển thị ở đây.',
+            Text(
+              formatDescription(
+                  widget.product.description, widget.product.categoryName),
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.5,
+              ),
             ),
-            // Add more details if available
             const SizedBox(height: 16.0),
           ],
         ),
@@ -178,8 +206,12 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
             ),
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  // Add action for "Thêm vào giỏ hàng" button
+                onPressed: () async {
+                  await _onSave(widget.product);
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Mainpage()),
+                );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
@@ -199,5 +231,60 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
         ),
       ),
     );
+  }
+
+  String formatDescription(String description, String cate) {
+    // Parse chuỗi JSON
+    final Map<String, dynamic> data = json.decode('{${description}}');
+
+    // Tạo chuỗi định dạng
+    String formattedDescription = '';
+
+    // Định nghĩa từ điển dịch cho từng loại sản phẩm
+    Map<String, String> keyTranslations;
+
+    if (cate == 'Phone') {
+      keyTranslations = {
+        'screen': 'Màn hình',
+        'os': 'Hệ điều hành',
+        'rear_camera': 'Camera sau',
+        'front_camera': 'Camera trước',
+        'chip': 'Chip',
+        'ram': 'RAM',
+        'storage': 'Dung lượng lưu trữ',
+        'sim': 'SIM',
+        'battery': 'Pin, Sạc',
+        'brand': 'Hãng',
+      };
+    } else if (cate == 'Laptop') {
+      keyTranslations = {
+        'cpu': 'CPU',
+        'ram': 'RAM',
+        'storage': 'Ổ cứng',
+        'display': 'Màn hình',
+        'graphics_card': 'Card màn hình',
+        'ports': 'Cổng kết nối',
+        'operating_system': 'Hệ điều hành',
+        'design': 'Thiết kế',
+        'dimensions_weight': 'Kích thước, khối lượng',
+        'release_year': 'Thời điểm ra mắt',
+      };
+    } else {
+      keyTranslations = {}; 
+    }
+
+    // Tra cứu khóa và chuyển đổi thành tiếng Việt
+    data.forEach((key, value) {
+      final translatedKey = keyTranslations[key] ?? key;
+
+      // Kiểm tra nếu giá trị là một danh sách
+      if (value is List) {
+        formattedDescription += '$translatedKey: ${value.join(', ')}\n';
+      } else {
+        formattedDescription += '$translatedKey: $value\n';
+      }
+    });
+
+    return formattedDescription;
   }
 }

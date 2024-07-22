@@ -33,7 +33,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     });
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      products = await APIRepository().getProductAdmin(
+      products = await APIRepository().getProduct(
           prefs.getString('accountID').toString(),
           prefs.getString('token').toString());
     } catch (e) {
