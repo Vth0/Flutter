@@ -25,29 +25,31 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             _buildCategoryCard(
               context,
               'Điện thoại',
-              'assets/images/phone.png', 
+              'assets/images/phone.png',
             ),
             _buildCategoryCard(
               context,
               'Laptop',
-              'assets/images/laptop.png', 
+              'assets/images/laptop.png',
             ),
             _buildCategoryCard(
               context,
               'Tablet',
-              'assets/images/tablet.png', 
+              'assets/images/tablet.png',
             ),
             _buildCategoryCard(
               context,
               'Đồng hồ',
-              'assets/images/watch.png', 
+              'assets/images/watch.png',
             ),
           ],
         ),
       ),
     );
   }
-  Widget _buildCategoryCard(BuildContext context, String title, String imagePath) {
+
+  Widget _buildCategoryCard(
+      BuildContext context, String title, String imagePath) {
     return GestureDetector(
       onTap: () {
         // Xử lý sự kiện khi nhấn vào mục
@@ -62,7 +64,8 @@ class _CategoryWidgetState extends State<CategoryWidget> {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(10.0)),
                 child: Image.asset(
                   imagePath,
                   fit: BoxFit.cover,
@@ -74,7 +77,8 @@ class _CategoryWidgetState extends State<CategoryWidget> {
               child: Center(
                 child: Text(
                   title,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -84,4 +88,3 @@ class _CategoryWidgetState extends State<CategoryWidget> {
     );
   }
 }
-

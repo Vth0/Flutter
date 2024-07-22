@@ -1,35 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/model/favorite.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../data/api.dart';
 import '../../data/sqlite.dart';
+import '../../model/cart.dart';
 
-class FavoriteWidget extends StatefulWidget {
-  const FavoriteWidget({super.key});
+class Detailcart extends StatefulWidget {
+  const Detailcart({super.key});
 
   @override
-  State<FavoriteWidget> createState() => _FavoriteWidgetState();
+  State<Detailcart> createState() => _DetailcartState();
 }
 
-class _FavoriteWidgetState extends State<FavoriteWidget> {
+class _DetailcartState extends State<Detailcart> {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  Future<List<Favorite>> _getProducts() async {
-    return await _databaseHelper.getFavorite();
+  Future<List<Cart>> _getProducts() async {
+    return await _databaseHelper.products();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Danh sách yêu thích'),
-        backgroundColor: Colors.blue,
-      ),
       body: Column(
         children: [
           Expanded(
             flex: 11,
-            child: FutureBuilder<List<Favorite>>(
+            child: FutureBuilder<List<Cart>>(
               future: _getProducts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -42,7 +40,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
-                    child: Text('Bạn chưa có sản phẩm nào trong danh sách yêu thích'),
+                    child: Text('Không có sản phẩm nào trong giỏ hàng'),
                   );
                 }
                 return Padding(
@@ -58,12 +56,37 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                textStyle: const TextStyle(fontSize: 18),
+              ),
+              onPressed: () async {
+                SharedPreferences pref = await SharedPreferences.getInstance();
+                List<Cart> temp = await _databaseHelper.products();
+                await APIRepository()
+                    .addBill(temp, pref.getString('token').toString());
+                setState(() {
+                  _databaseHelper.clear();
+                });
+              },
+              child: const Text(
+                "Thanh toán",
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildProduct(Favorite pro, BuildContext context) {
+  Widget _buildProduct(Cart pro, BuildContext context) {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(
@@ -130,6 +153,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                     ),
                   ),
                   const SizedBox(height: 4.0),
+                  Text('Số lượng: ${pro.count}'),
                   Text(
                     'Mô tả: ${pro.des}',
                     maxLines: 3,
@@ -141,12 +165,34 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
             IconButton(
               onPressed: () {
                 setState(() {
-                  _databaseHelper.removeFavorite(pro.productID);
+                  _databaseHelper.minus(pro);
+                });
+              },
+              icon: Icon(
+                Icons.remove_circle_outline,
+                color: Colors.yellow.shade800,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _databaseHelper.deleteProduct(pro.productID);
                 });
               },
               icon: const Icon(
                 Icons.delete,
                 color: Colors.red,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _databaseHelper.add(pro);
+                });
+              },
+              icon: Icon(
+                Icons.add_circle_outline,
+                color: Colors.yellow.shade800,
               ),
             ),
           ],

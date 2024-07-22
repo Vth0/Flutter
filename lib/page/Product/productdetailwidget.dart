@@ -1,12 +1,14 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:flutter_application_smartshop/model/favorite.dart';
+import '../../data/sqlite.dart';
 import 'package:flutter_application_smartshop/model/product.dart';
 
 class ProductDetailWidget extends StatefulWidget {
   final Product product;
 
-  const ProductDetailWidget({required this.product});
+  const ProductDetailWidget({super.key, required this.product});
 
   @override
   _ProductDetailWidgetState createState() => _ProductDetailWidgetState();
@@ -14,34 +16,40 @@ class ProductDetailWidget extends StatefulWidget {
 
 class _ProductDetailWidgetState extends State<ProductDetailWidget> {
   bool isFavorite = false;
+  DatabaseHelper dbHelper = DatabaseHelper();
 
   @override
   void initState() {
     super.initState();
-    _loadFavoriteStatus();
+    _checkFavoriteStatus();
   }
 
-  void _loadFavoriteStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? productJson = prefs.getString(widget.product.name);  // Giả sử tên sản phẩm là duy nhất
-    if (productJson != null) {
-      setState(() {
-        isFavorite = true;
-      });
-    }
-  }
-
-  void _toggleFavorite() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> _checkFavoriteStatus() async {
+    bool favoriteStatus = await dbHelper.isFavorite(widget.product.id);
     setState(() {
-      isFavorite = !isFavorite;
-      if (isFavorite) {
-        String productJson = json.encode(widget.product.toMap());
-        prefs.setString(widget.product.name, productJson);
-      } else {
-        prefs.remove(widget.product.name);
-      }
+      isFavorite = favoriteStatus;
     });
+  }
+
+  Future<void> _toggleFavorite(Product pro) async {
+    try {
+      if (isFavorite) {
+        await dbHelper.removeFavorite(pro.id); // Implement removeFavorite
+      } else {
+        await dbHelper.addFavorite(Favorite(
+          productID: pro.id,
+          name: pro.name,
+          des: pro.description,
+          price: pro.price,
+          img: pro.imageUrl,
+        ));
+      }
+      setState(() {
+        isFavorite = !isFavorite;
+      });
+    } catch (e) {
+      // Handle error or show feedback
+    }
   }
 
   @override
@@ -51,48 +59,79 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
         title: Text(widget.product.name),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Image.asset(
-                widget.product.imageUrl,
+            if (widget.product.imageUrl.isNotEmpty &&
+                widget.product.imageUrl != 'Null')
+              Container(
                 height: 300,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  image: DecorationImage(
+                    image: NetworkImage(widget.product.imageUrl),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Image.network(
+                  widget.product.imageUrl,
+                  loadingBuilder: (context, child, progress) {
+                    return progress == null
+                        ? child
+                        : const CircularProgressIndicator();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.error, color: Colors.red);
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.image, color: Colors.grey),
               ),
-            ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   widget.product.name,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
-                  onPressed: _toggleFavorite,
+                  onPressed: () => _toggleFavorite(widget.product),
                   icon: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: isFavorite ? Colors.red : null,
                   ),
+                  padding: const EdgeInsets.all(8.0),
                 ),
               ],
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Row(
               children: [
                 Text(
-                  '${widget.product.currentPrice}đ',
-                  style: TextStyle(
+                  '${widget.product.price}đ',
+                  style: const TextStyle(
                     fontSize: 22,
                     color: Colors.red,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 8.0),
+                const SizedBox(width: 8.0),
                 Text(
-                  '${widget.product.originalPrice}đ',
-                  style: TextStyle(
+                  '${widget.product.price + 100000}đ',
+                  style: const TextStyle(
                     fontSize: 18,
                     color: Colors.grey,
                     decoration: TextDecoration.lineThrough,
@@ -100,17 +139,17 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
-            Text(
+            const SizedBox(height: 16.0),
+            const Text(
               'Thông số kỹ thuật',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               '- Các thông số kỹ thuật của sản phẩm sẽ được hiển thị ở đây.',
             ),
-            // Thêm các chi tiết khác về sản phẩm nếu cần
-            SizedBox(height: 16.0),
+            // Add more details if available
+            const SizedBox(height: 16.0),
           ],
         ),
       ),
@@ -121,38 +160,38 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // Thêm hành động cho button Mua hàng
+                  // Add action for "Mua hàng" button
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero, // Đặt padding là zero
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // Đặt bo tròn cạnh thành zero
+                  padding: EdgeInsets.zero,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
                   ),
                 ),
                 child: Container(
-                  width: double.infinity, // Đảm bảo button rộng hết khoảng trống
-                  height: 50, // Điều chỉnh chiều cao của button theo nhu cầu
-                  alignment: Alignment.center, // Căn giữa nội dung
-                  child: Text('Mua hàng'),
+                  width: double.infinity,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: const Text('Mua hàng'),
                 ),
               ),
             ),
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // Thêm hành động cho button Thêm vào giỏ hàng
+                  // Add action for "Thêm vào giỏ hàng" button
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero, // Đặt padding là zero
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // Đặt bo tròn cạnh thành zero
+                  padding: EdgeInsets.zero,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
                   ),
                 ),
                 child: Container(
-                  width: double.infinity, // Đảm bảo button rộng hết khoảng trống
-                  height: 50, // Điều chỉnh chiều cao của button theo nhu cầu
-                  alignment: Alignment.center, // Căn giữa nội dung
-                  child: Text('Thêm vào giỏ hàng'),
+                  width: double.infinity,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: const Text('Thêm vào giỏ hàng'),
                 ),
               ),
             ),
