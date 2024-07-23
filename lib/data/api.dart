@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
+import 'package:flutter_application_smartshop/page/Profile/changepassword.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/bill.dart';
@@ -407,5 +408,34 @@ class APIRepository {
     rethrow;
   }
 }
+Future<String> changePassword(
+      String oldPass, String newpass, String confirmPass, String token) async {
+    try {
+      final body = FormData.fromMap({
+        "OldPassword": oldPass,
+        "NewPassword": newpass,
+      });
 
+      Response res = await api.sendRequest.put(
+        '/Auth/ChangePassword',
+        options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+        data: body,
+      );
+      // Kiểm tra response từ API
+      if (res.statusCode == 200) {
+        return "Password reset successful";
+      } else {
+        String errorMessage =
+            "Change password failed.";
+        print(errorMessage);
+        return errorMessage;
+      }
+    } catch (ex) {
+      return "Change password failed.";
+    }
+  }
 }
