@@ -74,7 +74,6 @@ class _CategoryAddState extends State<CategoryAdd> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.categoryModel != null && widget.isUpdate) {
       _nameController.text = widget.categoryModel!.name;

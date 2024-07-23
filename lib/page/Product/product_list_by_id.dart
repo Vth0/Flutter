@@ -12,6 +12,7 @@ class ProductListById extends StatefulWidget {
   const ProductListById({super.key, required this.categoryId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProductListByIdState createState() => _ProductListByIdState();
 }
 
@@ -86,7 +87,7 @@ class _ProductListByIdState extends State<ProductListById> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${product.name}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 16.0),
                             Text(
                               'Giá: ${NumberFormat('#,##0').format(product.price)}',
