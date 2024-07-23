@@ -234,6 +234,7 @@ class APIRepository {
         'categoryID': data.categoryId,
         'accountID': accountID
       });
+
       Response res = await api.sendRequest.put('/updateProduct',
           options: Options(headers: header(token)), data: body);
       if (res.statusCode == 200) {
@@ -370,30 +371,41 @@ class APIRepository {
       rethrow;
     }
   }
-  Future<bool> updateProfile(User user) async {
-    try {
-      final body = FormData.fromMap({
-        "numberID": user.idNumber,
-        "fullName": user.fullName,
-        "phoneNumber": user.phoneNumber,
-        "imageURL": user.imageURL,
-        "birthDay": user.birthDay,
-        "gender": user.gender,
-        "schoolYear": user.schoolYear,
-        "schoolKey": user.schoolKey,
-      });
-      Response res = await api.sendRequest.put('/Auth/updateProfile',
-          options: Options(headers: header('no token')), data: body);
-      if (res.statusCode == 200) {
-        print("ok");
-        return true;
-      } else {
-        print("fail");
-        return false;
-      }
-    } catch (ex) {
-      print(ex);
-      rethrow;
+
+  Future<bool> updateProfile(User user, String token) async {
+  try {
+    final body = FormData.fromMap({
+      "numberID": user.idNumber,
+      "fullName": user.fullName,
+      "phoneNumber": user.phoneNumber,
+      "imageURL": user.imageURL,
+      "birthDay": user.birthDay,
+      "gender": user.gender,
+      "schoolYear": '2024',
+      "schoolKey": 'K27',
+    });
+
+    Response res = await api.sendRequest.put(
+      '/Auth/updateProfile',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+      data: body,
+    );
+
+    if (res.statusCode == 200) {
+      print("ok");
+      return true;
+    } else {
+      print("fail");
+      return false;
     }
+  } catch (ex) {
+    print(ex);
+    rethrow;
   }
+}
+
 }

@@ -81,7 +81,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         child: Card(
           child: Column(
             children: [
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               if (product.imageUrl.isNotEmpty && product.imageUrl != 'Null')
                 Container(
                   height: 150,
@@ -189,7 +189,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                           ),
                           child: TextField(
                             controller: _searchController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: 'Search...',
                               prefixIcon: Icon(Icons.search),
                               border: InputBorder.none,

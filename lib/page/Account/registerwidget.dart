@@ -18,7 +18,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   int _gender = 0;
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _numberIDController = TextEditingController();
+  // final TextEditingController _numberIDController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -42,7 +42,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
         schoolYear: '2024',
         gender: getGender(),
         imageUrl: _imageURL.text,
-        numberID: _numberIDController.text));
+        numberID: '2XDHXXXXXX'));
   }
 
   getGender() {
@@ -150,14 +150,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         child: textField(_fullNameController,
                             'Nhập họ và tên...', Icons.person),
                       ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      SizedBox(
-                        width: 370,
-                        child: textField(_numberIDController,
-                            'Nhập email', Icons.card_membership),
-                      ),
+                      // const SizedBox(
+                      //   height: 24,
+                      // ),
+                      // SizedBox(
+                      //   width: 370,
+                      //   child: textField(_numberIDController,
+                      //       'Nhập email', Icons.card_membership),
+                      // ),
                       const SizedBox(
                         height: 24,
                       ),

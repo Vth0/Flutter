@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/page/Cart/checkout.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/api.dart';
+// import '../../data/api.dart';
 import '../../data/sqlite.dart';
 import '../../model/cart.dart';
 

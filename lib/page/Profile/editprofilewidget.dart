@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/data/sharepre.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart'; // Ensure Dio is imported
+// import 'package:dio/dio.dart';
 
-import '../../model/user.dart'; // Make sure User model is properly imported
+import '../../data/api.dart';
+import '../../model/user.dart';
 
 class EditProfileWidget extends StatefulWidget {
   const EditProfileWidget({super.key});
@@ -21,7 +24,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   final TextEditingController _genderController = TextEditingController();
   final TextEditingController _birthDayController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _imageController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -38,55 +42,62 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     _genderController.text = user.gender ?? '';
     _birthDayController.text = user.birthDay ?? '';
     _phoneNumberController.text = user.phoneNumber ?? '';
-    _emailController.text = user.idNumber ?? '';
+    _imageController.text = user.imageURL ?? '';
+    // _emailController.text = user.idNumber ?? '';
     setState(() {});
   }
 
   Future<void> _updateProfile() async {
-    user.fullName = _fullNameController.text;
-    user.gender = _genderController.text;
-    user.birthDay = _birthDayController.text;
-    user.phoneNumber = _phoneNumberController.text;
-    user.idNumber = _emailController.text;
+    setState(() {
+      _isLoading = true;
+    });
 
-    bool success = await updateProfile(user);
-    if (success) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cập nhật hồ sơ thành công!')),
-      );
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cập nhật hồ sơ thất bại!')),
-      );
-    }
-  }
-
-  Future<bool> updateProfile(User user) async {
     try {
-      final Dio dio = Dio();
-      final body = FormData.fromMap({
-        "numberID": user.idNumber,
-        "fullName": user.fullName,
-        "phoneNumber": user.phoneNumber,
-        "imageURL": user.imageURL,
-        "birthDay": user.birthDay,
-        "gender": user.gender,
-        "schoolYear": user.schoolYear,
-        "schoolKey": user.schoolKey,
-      });
-      Response res = await dio.put(
-        'https://huflit.id.vn:4321/api/Auth/updateProfile',
-        data: body,
-      );
-      if (res.statusCode == 200) {
-        return true;
-      } else {
-        return false;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception("Token not found");
       }
-    } catch (ex) {
-      return false;
+
+      // Tạo đối tượng User
+      User user = User(
+        idNumber: '2XDHXXXXXX',
+        accountId: null,
+        fullName: _fullNameController.text,
+        phoneNumber: _phoneNumberController.text,
+        imageURL: _imageController.text,
+        birthDay: _birthDayController.text,
+        gender: _genderController.text,
+        schoolYear: '2024',
+        schoolKey: 'K27',
+        dateCreated: DateTime.now().toIso8601String(),
+        status: true,
+      );
+
+      // Gọi API để cập nhật hồ sơ
+      bool result = await APIRepository().updateProfile(user, token);
+
+      Flushbar(
+        title: "Cập nhật hồ sơ",
+        message:
+            result ? "Cập nhật hồ sơ thành công" : "Cập nhật hồ sơ thất bại",
+        duration: const Duration(seconds: 3),
+      ).show(context);
+
+      if (result) {
+        logOut(context);
+      }
+    } catch (e) {
+      Flushbar(
+        title: "Cập nhật hồ sơ",
+        message: "Cập nhật hồ sơ thất bại: $e",
+        duration: const Duration(seconds: 3),
+      ).show(context);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -104,92 +115,105 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 16.0),
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(35),
-                  child: (user.imageURL != null && user.imageURL!.isNotEmpty)
-                      ? Image.network(
-                          user.imageURL!,
-                          height: 70,
-                          width: 70,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const SizedBox(
-                              height: 70,
-                              width: 70,
-                              child: Icon(Icons.person, size: 70),
-                            );
-                          },
-                        )
-                      : const SizedBox(
-                          height: 70,
-                          width: 70,
-                          child: Icon(Icons.person, size: 70),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              _buildProfileItem('Tên', _fullNameController),
-              _buildProfileItem('Giới tính', _genderController),
-              _buildProfileItem('Ngày sinh', _birthDayController),
-              _buildProfileItem('Số điện thoại', _phoneNumberController),
-              _buildProfileItem('Email', _emailController),
-
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _updateProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                child: const Text('LƯU'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileItem(String label, TextEditingController? controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CircleAvatar(
+              radius: 75, // Bán kính hình tròn
+              backgroundImage:
+                  user.imageURL != null && user.imageURL!.isNotEmpty
+                      ? NetworkImage(user.imageURL!)
+                      : null,
+              child: user.imageURL == null || user.imageURL!.isEmpty
+                  ? const Icon(
+                      Icons.person,
+                      size: 75, // Kích thước icon nếu không có hình ảnh
+                      color: Colors.grey,
+                    )
+                  : null,
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: TextField(
-              controller: controller,
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _fullNameController,
               decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                hintText: 'Nhập $label',
+                hintText: 'Tên đầy đủ...',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _genderController,
+              decoration: InputDecoration(
+                hintText: 'Giới tính...',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _birthDayController,
+              decoration: InputDecoration(
+                hintText: 'Ngày sinh...',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _phoneNumberController,
+              decoration: InputDecoration(
+                hintText: 'Số điện thoại...',
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
+            ),
+            // const SizedBox(height: 16.0),
+            // TextField(
+            //   controller: _emailController,
+            //   decoration: InputDecoration(
+            //     hintText: 'Email...',
+            //     fillColor: Colors.white,
+            //     filled: true,
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(25.0),
+            //     ),
+            //   ),
+            // ),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _updateProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('LƯU'),
+            ),
+          ],
+        ),
       ),
     );
   }
