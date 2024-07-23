@@ -42,7 +42,7 @@ class _LoginWidgetState extends State<LoginWidget> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+        const SnackBar(content: Text('Login failed')),
       );
     }
   }

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/data/sharepre.dart';
+import 'package:flutter_application_smartshop/page/Profile/changepassword.dart';
 import 'package:flutter_application_smartshop/page/Profile/editprofilewidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -173,6 +174,18 @@ class _DetailUserState extends State<DetailUser> {
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help),
+              title: const Text('Thay đổi mật khẩu'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangePasswordWidget()),
+                        );
               },
             ),
             ListTile(
