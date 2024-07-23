@@ -1,85 +1,76 @@
 import 'package:flutter/material.dart';
 
-class CheckOutWidget extends StatefulWidget {
-  const CheckOutWidget({super.key});
+class Checkout extends StatefulWidget {
+  const Checkout({super.key});
 
   @override
-  State<CheckOutWidget> createState() => _CheckOutWidgetState();
+  State<Checkout> createState() => _CheckoutState();
 }
 
-class _CheckOutWidgetState extends State<CheckOutWidget> {
+class _CheckoutState extends State<Checkout> {
+  // Sample data for the product list and other sections.
+  // In a real application, this data would be fetched from a backend or state management solution.
+  final List<ProductItem> _cartItems = [
+    ProductItem(
+      imageUrl: 'assets/images/laptop.png',
+      name: 'iPhone 15 Plus 128GB',
+      color: 'Hồng',
+      price: 22590000,
+      quantity: 1,
+    ),
+    ProductItem(
+      imageUrl: 'assets/images/laptop.png',
+      name: 'Laptop Asus TUF Gaming A15', 
+      color: 'Đen',
+      price: 17990000,
+      quantity: 1,
+    ),
+    ProductItem(
+      imageUrl: 'assets/images/laptop.png',
+      name: 'Mi Band 8',
+      color: 'Đen',
+      price: 690000,
+      quantity: 1,
+    ),ProductItem(
+      imageUrl: 'assets/images/laptop.png',
+      name: 'Mi Band 8',
+      color: 'Đen',
+      price: 690000,
+      quantity: 1,
+    ),
+    ProductItem(
+      imageUrl: 'assets/images/laptop.png',
+      name: 'Mi Band 8',
+      color: 'Đen',
+      price: 690000,
+      quantity: 1,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Thanh toán'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Handle back button press
-          },
-        ),
+        title: const Text('Thanh toán'),
+        backgroundColor: Colors.blue,
       ),
-      body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
-          AddressSection(),
-          SizedBox(height: 16.0),
-          ProductList(),
-          SizedBox(height: 16.0),
-          VoucherSection(),
-          SizedBox(height: 16.0),
-          PaymentMethodSection(),
-          SizedBox(height: 16.0),
-          PaymentDetailSection(),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Tổng thanh toán: ',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                        text: '1000000đ',
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                  width: 160,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Handle purchase action
-                    },
-                    style: ElevatedButton.styleFrom(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        backgroundColor: Colors.red),
-
-                    child: const Text(
-                      'Mua hàng',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ), // const không cần thiết ở đây
-                  ),
-                )
-              ],
+            AddressSection(),
+            const SizedBox(height: 10),
+            SizedBox(height: 300,
+            child: ProductListSection(cartItems: _cartItems),
             ),
+            const SizedBox(height: 10),
+
+            PaymentMethodSection(),
+            const SizedBox(height: 10),
+            OrderSummarySection(cartItems: _cartItems),
+            const Spacer(),
+            CheckoutButton(),
           ],
         ),
       ),
@@ -90,205 +81,165 @@ class _CheckOutWidgetState extends State<CheckOutWidget> {
 class AddressSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4.0,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Địa chỉ nhận hàng:',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text('Công | (+84)901111111'),
-          Text('828 Đ. Sư Vạn Hạnh, Phường 12, Quận 10, Hồ Chí Minh'),
-        ],
+    return Card(
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              'Địa chỉ nhận hàng:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text('Công | (+84)901111111'),
+            Text('828 Đ. Sư Vạn Hạnh, Phường 12, Quận 10, Hồ Chí Minh'),
+          ],
+        ),
       ),
     );
   }
 }
 
-class ProductList extends StatelessWidget {
+class ProductListSection extends StatelessWidget {
+  final List<ProductItem> cartItems;
+
+  const ProductListSection({required this.cartItems});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ProductItem(
-          name: 'iPhone 15 Plus 128GB',
-          color: 'Hồng',
-          price: '22.590.000đ',
-          quantity: 1,
-          imageUrl:
-              'assets/images/products/phone1.jpg', // Replace with actual image URL
-        ),
-        ProductItem(
-          name: 'Laptop Asus TUF Gaming A15',
-          color: 'Đen',
-          price: '17.990.000đ',
-          quantity: 1,
-          imageUrl:
-              'assets/images/products/phone2.jpg', // Replace with actual image URL
-        ),
-        ProductItem(
-          name: 'Mi Band 8',
-          color: 'Đen',
-          price: '690.000đ',
-          quantity: 1,
-          imageUrl:
-              'assets/images/products/phone3.jpg', // Replace with actual image URL
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: cartItems.map((item) {
+          return item;
+        }).toList(),
+      ),
     );
   }
 }
 
 class ProductItem extends StatelessWidget {
+  final String imageUrl;
   final String name;
   final String color;
-  final String price;
+  final int price;
   final int quantity;
-  final String imageUrl;
 
   const ProductItem({
+    required this.imageUrl,
     required this.name,
     required this.color,
     required this.price,
     required this.quantity,
-    required this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-      ),
-      child: Row(
-        children: [
-          Image.network(
-            imageUrl,
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-          ),
-          SizedBox(width: 16.0),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('Màu: $color'),
-                Text(price),
-              ],
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Image.asset(imageUrl, width: 50, height: 50),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Màu: $color'),
+                  Text('x$quantity'),
+                ],
+              ),
             ),
-          ),
-          Text('x$quantity'),
-        ],
+            Text('${price.toString()}đ'),
+          ],
+        ),
       ),
     );
   }
 }
 
-class VoucherSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Voucher'),
-          Row(
-            children: [
-              Text('-3.301.600đ'),
-              SizedBox(width: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle voucher action
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, // Background color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.blue), // Border color
-                  ),
-                ),
-                child: Text('Miễn phí vận chuyển'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class PaymentMethodSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Phương thức thanh toán'),
-          Text(
-            'Thanh toán khi nhận hàng',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
+    return Card(
+      elevation: 2,
+      child: ListTile(
+        leading: Icon(Icons.payment),
+        title: Text('Phương thức thanh toán'),
+        subtitle: Text('Thanh toán khi nhận hàng'),
       ),
     );
   }
 }
 
-class PaymentDetailSection extends StatelessWidget {
+class OrderSummarySection extends StatelessWidget {
+  final List<ProductItem> cartItems;
+
+  const OrderSummarySection({required this.cartItems});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Colors.grey.shade300),
+    int totalPrice = cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Chi tiết thanh toán', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 5),
+            // Adjust this value according to your logic for vouchers, etc.
+            OrderSummaryItem(label: 'Tổng thanh toán', value: '$totalPrice đ', isBold: true),
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Chi tiết thanh toán',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Tổng tiền hàng'),
-              Text('41.270.000đ'),
-            ],
-          ),
-        ],
+    );
+  }
+}
+
+class OrderSummaryItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isBold;
+
+  const OrderSummaryItem({
+    required this.label,
+    required this.value,
+    this.isBold = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+        Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+      ],
+    );
+  }
+}
+
+class CheckoutButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: () {
+          // Handle checkout process
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          minimumSize: Size(double.infinity, 50),
+        ),
+        child: const Text('Thanh toán', style: TextStyle(fontSize: 18)),
       ),
     );
   }

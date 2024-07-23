@@ -1,163 +1,68 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/page/Cart/checkout.dart';
+// ignore_for_file: non_constant_identifier_names
 
-class CartWidget extends StatefulWidget {
-  const CartWidget({super.key});
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/page/Cart/detailcart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../model/user.dart';
+import '../Account/unloginwidget.dart';
+import '../loadingScreen.dart';
+
+class Cartwidget extends StatefulWidget {
+  const Cartwidget({super.key});
 
   @override
-  State<CartWidget> createState() => _CartWidgetState();
+  State<Cartwidget> createState() => _CartwidgetState();
 }
 
-class _CartWidgetState extends State<CartWidget> {
-  int quantity = 1;
-  final double price = 22590000;
+class _CartwidgetState extends State<Cartwidget> {
+  bool _isLoggedIn = false;
+  bool _isLoading = true;
 
-  void incrementQuantity() {
-    setState(() {
-      quantity++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    getDataUser();
   }
 
-  void decrementQuantity() {
-    if (quantity > 1) {
+  User user = User.userEmpty();
+
+  Future<void> getDataUser() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? strUser = pref.getString('user');
+
+    if (strUser != null && strUser.isNotEmpty) {
       setState(() {
-        quantity--;
+        user = User.fromJson(jsonDecode(strUser));
+        _isLoggedIn = true;
+      });
+    } else {
+      setState(() {
+        user = User.userEmpty();
+        _isLoggedIn = false;
       });
     }
+
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    double totalPrice = quantity * price;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Giỏ hàng'),
+        backgroundColor: Colors.blue,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/products/phone1.jpg',
-                        width: 100,
-                        height: 100,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'iPhone 15 Plus 128GB',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 8,),
-                            const Text(
-                              'Màu: Hồng',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 8,),
-                            Text(
-                              '${price.toStringAsFixed(0)} đ',
-                              style: const TextStyle(
-                                  fontSize: 18, color: Colors.red),
-                            ),
-                            SizedBox(height: 8,),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove),
-                                  onPressed: decrementQuantity,
-                                ),
-                                Text(
-                                  '$quantity',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.add),
-                                  onPressed: incrementQuantity,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Divider(),
-                ],
-              ),
-              
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment :CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
-                      children: [
-                        const Text(
-                          'Tổng thanh toán:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8.0,),
-                        Text(
-                          '${totalPrice.toStringAsFixed(0)}đ',
-                          style:
-                              const TextStyle(fontSize: 18, color: Colors.red),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: 200,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CheckOutWidget(),
-                              ),
-                            );
-                          // Handle purchase action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10)),
-                          ),
-                          backgroundColor: Colors.red
-                        ),
-                        
-                        child: const Text(
-                            'Mua hàng',
-                            style: TextStyle(fontWeight:FontWeight.bold,color: Colors.white),
-                            ), // const không cần thiết ở đây
-                      ),
-                    )
-                  ],
-                ),
-              
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: _isLoading
+          ? const Center(child: Loadingscreen())
+          : _isLoggedIn
+              ? const Detailcart()
+              : const Unloginwidget(),
     );
   }
 }
