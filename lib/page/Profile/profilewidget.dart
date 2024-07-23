@@ -2,35 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/page/Profile/editprofilewidget.dart';
 
 class ProfileWidget extends StatelessWidget {
-  
+  const ProfileWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cá nhân'),
+        title: const Text('Cá nhân'),
         backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Card(
-              margin: EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 40.0,
-                      backgroundImage: AssetImage('assets/images/image.png'), // Đường dẫn tới ảnh đại diện
+                      backgroundImage: AssetImage(
+                          'assets/images/image.png'), // Đường dẫn tới ảnh đại diện
                     ),
-                    SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Túc Quốc Công',
                           style: TextStyle(
                             fontSize: 18.0,
@@ -46,13 +48,14 @@ class ProfileWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => EditProfileWidget()),
+                          MaterialPageRoute(
+                              builder: (context) => const EditProfileWidget()),
                         );
                       },
                     ),
@@ -61,49 +64,49 @@ class ProfileWidget extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.receipt_long),
-              title: Text('Đơn hàng'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.receipt_long),
+              title: const Text('Đơn hàng'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
               },
             ),
             ListTile(
-              leading: Icon(Icons.rate_review),
-              title: Text('Đánh giá của tôi'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.rate_review),
+              title: const Text('Đánh giá của tôi'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Cài đặt'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.settings),
+              title: const Text('Cài đặt'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
               },
             ),
             ListTile(
-              leading: Icon(Icons.policy),
-              title: Text('Chính sách và điều khoản'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.policy),
+              title: const Text('Chính sách và điều khoản'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
               },
             ),
             ListTile(
-              leading: Icon(Icons.help),
-              title: Text('Hỗ trợ'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.help),
+              title: const Text('Hỗ trợ'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Đăng xuất'),
-              trailing: Icon(Icons.arrow_forward_ios),
+              leading: const Icon(Icons.logout),
+              title: const Text('Đăng xuất'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
                 // Xử lý sự kiện khi nhấn vào mục
               },
@@ -111,7 +114,6 @@ class ProfileWidget extends StatelessWidget {
           ],
         ),
       ),
-      
     );
   }
 }

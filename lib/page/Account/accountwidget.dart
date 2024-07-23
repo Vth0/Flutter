@@ -1,6 +1,14 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/page/Account/loginwidget.dart';
-import 'package:flutter_application_smartshop/page/Account/registerwidget.dart';
+import 'package:flutter_application_smartshop/page/Account/detailuser.dart';
+import 'package:flutter_application_smartshop/page/Account/unloginwidget.dart';
+import 'package:flutter_application_smartshop/page/loadingScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../model/user.dart';
 
 class AccountWidget extends StatefulWidget {
   const AccountWidget({super.key});
@@ -10,82 +18,47 @@ class AccountWidget extends StatefulWidget {
 }
 
 class _AccountWidgetState extends State<AccountWidget> {
+  bool _isLoggedIn = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getDataUser();
+  }
+
+  User user = User.userEmpty();
+
+  Future<void> getDataUser() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? strUser = pref.getString('user');
+
+    if (strUser != null && strUser.isNotEmpty) {
+      setState(() {
+        user = User.fromJson(jsonDecode(strUser));
+        _isLoggedIn = true;
+      });
+    } else {
+      setState(() {
+        user = User.userEmpty();
+        _isLoggedIn = false;
+      });
+    }
+
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          color:
-              const Color.fromARGB(213, 239, 239, 239), // Lớp màu xanh trắng mờ
-        ),
-        Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              color: const Color.fromARGB(255, 67, 99, 127)
-                  .withOpacity(0.5), // Lớp màu xanh trắng mờ
-            ),
-            const Text(
-              "Smart Shop",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Image.asset(
-              "assets//images/image.png",
-              height: 150,
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            SizedBox(
-                width: 300,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginWidget()));
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        WidgetStateProperty.all<Color>(Colors.blue),
-                  ),
-                  child: const Text(
-                    "Đăng nhập",
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                )),
-            const SizedBox(
-              height: 16,
-            ),
-            SizedBox(
-                width: 300,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterWidget()));
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        WidgetStateProperty.all<Color>(Colors.blue),
-                  ),
-                  child: const Text("Đăng ký",
-                      style: TextStyle(fontSize: 20, color: Colors.white)),
-                )),
-            const SizedBox(
-              height: 16,
-            ),
-          ],
-        ))
-      ],
+    return Scaffold(
+      body: _isLoading
+          ? const Center(child: Loadingscreen())
+          : _isLoggedIn
+              ? const DetailUser()
+              : const Unloginwidget(),
     );
   }
 }

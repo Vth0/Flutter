@@ -1,28 +1,26 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/data/api.dart';
-import 'package:flutter_application_smartshop/model/category.dart';
-import 'package:flutter_application_smartshop/page/Product/product_list_by_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Categorywidget extends StatefulWidget {
-  const Categorywidget({super.key});
+import '../../data/api.dart';
+import '../../model/category.dart';
+
+class CategoryPage extends StatefulWidget {
+  const CategoryPage({super.key});
 
   @override
-  State<Categorywidget> createState() => _CategorywidgetState();
-  
+  State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _CategorywidgetState extends State<Categorywidget> {
-
+class _CategoryPageState extends State<CategoryPage> {
   Future<List<Category>> _getCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return await APIRepository().getCategory(
         prefs.getString('accountID').toString(),
         prefs.getString('token').toString());
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +40,7 @@ class _CategorywidgetState extends State<Categorywidget> {
       ),
     );
   }
+
   Widget _buildCategoryGrid(List<Category> categories) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -60,15 +59,16 @@ class _CategorywidgetState extends State<Categorywidget> {
       ),
     );
   }
+
   Widget _buildCategoryItem(Category category) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductListById(categoryId: category.id),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => ProductListById(categoryId: category.id),
+        //   ),
+        // );
       },
       child: Container(
         decoration: BoxDecoration(

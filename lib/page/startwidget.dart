@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+// import 'package:flutter_application_smartshop/page/Account/loginwidget.dart';
 import 'package:flutter_application_smartshop/page/mainpage.dart';
 
 class Startwidget extends StatefulWidget {
@@ -13,11 +14,10 @@ class _StartwidgetState extends State<Startwidget> {
   @override
   void initState() {
     super.initState();
-    
+
     Timer(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Mainpage())
-      );
+          MaterialPageRoute(builder: (context) => const Mainpage()));
     });
   }
 
@@ -31,11 +31,10 @@ class _StartwidgetState extends State<Startwidget> {
             "assets/images/background.jpg",
             fit: BoxFit.cover,
           ),
-
           Container(
-            color: const Color.fromARGB(255, 159, 205, 244).withOpacity(0.5), // Lớp màu xanh trắng mờ
+            color: const Color.fromARGB(255, 159, 205, 244)
+                .withOpacity(0.5), // Lớp màu xanh trắng mờ
           ),
-
           const Center(
             child: Text(
               "SmartShop",

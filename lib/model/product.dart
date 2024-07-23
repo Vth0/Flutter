@@ -1,33 +1,37 @@
 class Product {
-  final String name;
-  final String imageUrl;
-  final double currentPrice;
-  final double originalPrice;
+  int id;
+  String name;
+  String description;
+  String imageUrl;
+  dynamic price;
+  int categoryId;
+  String categoryName;
 
   Product({
+    required this.id,
     required this.name,
+    required this.description,
     required this.imageUrl,
-    required this.currentPrice,
-    required this.originalPrice,
+    required this.price,
+    required this.categoryId,
+    required this.categoryName,
   });
-  // Add a method to convert a product to a map
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'imageUrl': imageUrl,
-      'currentPrice': currentPrice,
-      'originalPrice': originalPrice,
-    };
-  }
-
-  // Add a method to create a product from a map
-  factory Product.fromMap(Map<String, dynamic> map) {
-    return Product(
-      name: map['name'],
-      imageUrl: map['imageUrl'],
-      currentPrice: map['currentPrice'],
-      originalPrice: map['originalPrice'],
-    );
-  }
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
+        id: json["id"] ?? 0,
+        name: json["name"] ?? '',
+        description: json["description"] ?? '',
+        imageUrl: json["imageURL"] ?? '',
+        price: json["price"] ?? 0,
+        categoryId: json["categoryID"] ?? 0,
+        categoryName: json["categoryName"] ?? '',
+      );
+  Map<String, dynamic> toMap() => {
+        "productID": id,
+        "name": name,
+        "description": description,
+        "imageURL": imageUrl,
+        "price": price,
+        "categoryID": categoryId,
+        "categoryName": categoryName,
+      };
 }
-
