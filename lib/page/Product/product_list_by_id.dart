@@ -1,8 +1,5 @@
-// ignore_for_file: library_private_types_in_public_api
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/page/Product/productdetailwidget.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,34 +57,44 @@ class _ProductListByIdState extends State<ProductListById> {
             itemBuilder: (context, index) {
               final product = snapshot.data![index];
               return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListTile(
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  contentPadding: const EdgeInsets.all(8.0),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailWidget(product: product),
+                      ),
+                    );
+                  },
+                  subtitle: Row(
                     children: [
-                      Row(
-                        children: [
-                          Image(
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            image: FileImage(File(product.imageUrl)),
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Tên sản phẩm: ${product.name}'),
-                              Text('Mô tả: ${product.description}'),
-                              Text(
-                                'Giá: ${NumberFormat('#,##0').format(product.price)}',
-                              ),
-                              Text('Phân loại: ${product.categoryName}'),
-                            ],
-                          )
-                        ],
-                      )
+                      SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: Image.network(
+                          product.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.error, color: Colors.red);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${product.name}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Giá: ${NumberFormat('#,##0').format(product.price)}',
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

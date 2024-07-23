@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/page/Account/accountwidget.dart';
 import 'package:flutter_application_smartshop/page/Cart/cartwidget.dart';
+//import 'package:flutter_application_smartshop/page/Categories/category_page.dart';
 import 'package:flutter_application_smartshop/page/Categories/categorywidget.dart';
+
 import 'package:flutter_application_smartshop/page/Favorite/favoritewidget.dart';
 import 'package:flutter_application_smartshop/page/Home/homewidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +25,7 @@ class _MainpageState extends State<Mainpage> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeWidget(),
-    const CategoryWidget(),
+    const Categorywidget(),
     const Cartwidget(),
     const FavoriteWidget(),
     const AccountWidget()

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/page/Cart/checkout.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +23,8 @@ class _DetailcartState extends State<Detailcart> {
 
   Future<double> _getTotalAmount() async {
     List<Cart> products = await _getProducts();
-    double totalAmount = products.fold(0, (sum, item) => sum + (item.price * item.count));
+    double totalAmount =
+        products.fold(0, (sum, item) => sum + (item.price * item.count));
     return totalAmount;
   }
 
@@ -65,10 +67,13 @@ class _DetailcartState extends State<Detailcart> {
                       FutureBuilder<double>(
                         future: _getTotalAmount(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
                           } else if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
                           } else if (!snapshot.hasData) {
                             return const Text('Không thể tính tổng thanh toán');
                           }
@@ -80,13 +85,18 @@ class _DetailcartState extends State<Detailcart> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   'Tổng thanh toán:',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(
                                   NumberFormat('###,###.0').format(totalAmount),
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
                                 ),
                               ],
                             ),
@@ -109,13 +119,22 @@ class _DetailcartState extends State<Detailcart> {
                 textStyle: const TextStyle(fontSize: 18),
               ),
               onPressed: () async {
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                List<Cart> temp = await _databaseHelper.products();
-                await APIRepository()
-                    .addBill(temp, pref.getString('token').toString());
-                setState(() {
-                  _databaseHelper.clear();
-                });
+                // SharedPreferences pref = await SharedPreferences.getInstance();
+                // List<Cart> temp = await _databaseHelper.products();
+                // String token = pref.getString('token') ?? '';
+
+                
+                // await APIRepository()
+                //     .addBill(temp, pref.getString('token').toString());
+                // setState(() {
+                //   _databaseHelper.clear();
+                // });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Checkout(),
+                  ),
+                );
               },
               child: const Text(
                 "Thanh toán",
@@ -197,7 +216,6 @@ class _DetailcartState extends State<Detailcart> {
                   ),
                   const SizedBox(height: 4.0),
                   Text('Số lượng: ${pro.count}'),
-                  
                 ],
               ),
             ),

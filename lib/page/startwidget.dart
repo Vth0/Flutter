@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/page/Account/loginwidget.dart';
+// import 'package:flutter_application_smartshop/page/Account/loginwidget.dart';
 import 'package:flutter_application_smartshop/page/mainpage.dart';
 
 class Startwidget extends StatefulWidget {

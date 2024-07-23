@@ -105,7 +105,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     TextField(
                       controller: _accountController,
                       decoration: InputDecoration(
-                        hintText: 'Email...',
+                        hintText: 'Nhập tài khoản...',
                         fillColor: Colors.white,
                         filled: true,
                         border: OutlineInputBorder(
@@ -120,7 +120,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                       controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        hintText: "Password...",
+                        hintText: "Nhập mật khẩu...",
                         fillColor: Colors.white,
                         filled: true,
                         border: OutlineInputBorder(

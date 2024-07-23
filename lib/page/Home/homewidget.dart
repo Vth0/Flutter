@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,13 +16,18 @@ class HomeWidget extends StatefulWidget {
 
 class _HomeWidgetState extends State<HomeWidget> {
   List<Product> products = [];
+  List<Product> filteredProducts = [];
   User user = User.userEmpty();
   bool isLoading = true;
+  bool showSearchResults = false;
+
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadProducts();
+    _searchController.addListener(_searchProducts);
   }
 
   Future<void> _loadProducts() async {
@@ -36,6 +39,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       products = await APIRepository().getProduct(
           prefs.getString('accountID').toString(),
           prefs.getString('token').toString());
+      filteredProducts = products;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load products: $e')),
@@ -45,6 +49,21 @@ class _HomeWidgetState extends State<HomeWidget> {
         isLoading = false;
       });
     }
+  }
+
+  void _searchProducts() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        filteredProducts = products;
+        showSearchResults = false;
+      } else {
+        filteredProducts = products
+            .where((product) => product.name.toLowerCase().contains(query))
+            .toList();
+        showSearchResults = true;
+      }
+    });
   }
 
   Widget _buildProductCard(Product product) {
@@ -62,9 +81,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         child: Card(
           child: Column(
             children: [
-              SizedBox(
-                height: 5,
-              ),
+              SizedBox(height: 5),
               if (product.imageUrl.isNotEmpty && product.imageUrl != 'Null')
                 Container(
                   height: 150,
@@ -171,6 +188,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: TextField(
+                            controller: _searchController,
                             decoration: InputDecoration(
                               hintText: 'Search...',
                               prefixIcon: Icon(Icons.search),
@@ -185,100 +203,135 @@ class _HomeWidgetState extends State<HomeWidget> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Flash Sale section
-                  Container(
-                    color: Colors.yellow[100],
-                    padding: const EdgeInsets.all(10),
-                    height: 320,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  // Show search results if applicable
+                  if (showSearchResults)
+                    Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Kết quả tìm kiếm',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: 240,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: filteredProducts.length,
+                              itemBuilder: (context, index) {
+                                final product = filteredProducts[index];
+                                return _buildProductCard(product);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Column(
                       children: [
-                        const Text(
-                          'Flash Sale',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 240,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: products.length,
-                            itemBuilder: (context, index) {
-                              final product = products[index];
-                              return _buildProductCard(product);
-                            },
+                        // Flash Sale section
+                        Container(
+                          color: Colors.yellow[100],
+                          padding: const EdgeInsets.all(10),
+                          height: 320,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Flash Sale',
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 240,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = products[index];
+                                    return _buildProductCard(product);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                  // Hot Products section
-                  Container(
-                    color: Colors.purple[100],
-                    padding: const EdgeInsets.all(10),
-                    height: 320,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Sản phẩm Hot',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 240,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: products.length,
-                            itemBuilder: (context, index) {
-                              final product = products[index];
-                              return _buildProductCard(product);
-                            },
+                        // Hot Products section
+                        Container(
+                          color: Colors.purple[100],
+                          padding: const EdgeInsets.all(10),
+                          height: 320,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Sản phẩm Hot',
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 240,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = products[index];
+                                    return _buildProductCard(product);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                  //New Product section
-                  Container(
-                    color: Colors.orange[100],
-                    padding: const EdgeInsets.all(10),
-                    height: 320,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Sản phẩm mới',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 240,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: products.length,
-                            itemBuilder: (context, index) {
-                              final product = products[index];
-                              return _buildProductCard(product);
-                            },
+                        // New Product section
+                        Container(
+                          color: Colors.orange[100],
+                          padding: const EdgeInsets.all(10),
+                          height: 320,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Sản phẩm mới',
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 240,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = products[index];
+                                    return _buildProductCard(product);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
                 ],
               ),
             ),

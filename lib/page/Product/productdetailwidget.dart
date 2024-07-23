@@ -209,9 +209,10 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                 onPressed: () async {
                   await _onSave(widget.product);
                   Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Mainpage()),
-                );
+                    // ignore: use_build_context_synchronously
+                    context,
+                    MaterialPageRoute(builder: (context) => const Mainpage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
@@ -235,7 +236,7 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
 
   String formatDescription(String description, String cate) {
     // Parse chuỗi JSON
-    final Map<String, dynamic> data = json.decode('{${description}}');
+    final Map<String, dynamic> data = json.decode('{$description}');
 
     // Tạo chuỗi định dạng
     String formattedDescription = '';
@@ -269,8 +270,27 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
         'dimensions_weight': 'Kích thước, khối lượng',
         'release_year': 'Thời điểm ra mắt',
       };
+    } else if (cate == 'Tablet') {
+      keyTranslations = {
+        'display': 'Màn hình',
+        'operating_system': 'Hệ điều hành',
+        'chip': 'Chip',
+        'ram': 'RAM',
+        'storage': 'Dung lượng lưu trữ',
+        'rear_camera': 'Camera sau',
+        'front_camera': 'Camera trước',
+        'battery_charging': 'Pin, Sạc',
+      };
+    } else if (cate == 'Smartwatch') {
+      keyTranslations = {
+        'display': 'Màn hình',
+        'battery_life': 'Thời gian sử dụng pin',
+        'compatibility': 'Tương thích',
+        'case_material': 'Chất liệu vỏ',
+        'health_features': 'Tính năng sức khỏe',
+      };
     } else {
-      keyTranslations = {}; 
+      keyTranslations = {};
     }
 
     // Tra cứu khóa và chuyển đổi thành tiếng Việt

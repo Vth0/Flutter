@@ -23,8 +23,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _schoolKeyController = TextEditingController();
-  final TextEditingController _schoolYearController = TextEditingController();
+  // final TextEditingController _schoolKeyController = TextEditingController();
+  // final TextEditingController _schoolYearController = TextEditingController();
   final TextEditingController _birthDayController = TextEditingController();
   final TextEditingController _imageURL = TextEditingController();
   String gendername = 'None';
@@ -38,8 +38,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
         confirmPassword: _confirmPasswordController.text,
         fullName: _fullNameController.text,
         phoneNumber: _phoneNumberController.text,
-        schoolKey: _schoolKeyController.text,
-        schoolYear: _schoolYearController.text,
+        schoolKey: 'HUFLIT',
+        schoolYear: '2024',
         gender: getGender(),
         imageUrl: _imageURL.text,
         numberID: _numberIDController.text));
@@ -124,7 +124,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       SizedBox(
                         width: 370,
                         child: textField(_accountController,
-                            'Nhập Account ID...', Icons.account_circle),
+                            'Nhập tài khoản', Icons.account_circle),
                       ),
                       const SizedBox(
                         height: 24,
@@ -156,7 +156,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       SizedBox(
                         width: 370,
                         child: textField(_numberIDController,
-                            'Nhập Number ID...', Icons.card_membership),
+                            'Nhập email', Icons.card_membership),
                       ),
                       const SizedBox(
                         height: 24,
@@ -177,19 +177,19 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       const SizedBox(
                         height: 24,
                       ),
-                      SizedBox(
-                        width: 370,
-                        child: textField(_schoolYearController,
-                            'Nhập năm học...', Icons.school),
-                      ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      SizedBox(
-                        width: 370,
-                        child: textField(_schoolKeyController,
-                            'Nhập mã trường...', Icons.school),
-                      ),
+                      // SizedBox(
+                      //   width: 370,
+                      //   child: textField(_schoolYearController,
+                      //       'Nhập năm học...', Icons.school),
+                      // ),
+                      // const SizedBox(
+                      //   height: 24,
+                      // ),
+                      // SizedBox(
+                      //   width: 370,
+                      //   child: textField(_schoolKeyController,
+                      //       'Nhập mã trường...', Icons.school),
+                      // ),
                       const SizedBox(
                         height: 24,
                       ),
