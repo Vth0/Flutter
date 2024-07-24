@@ -176,10 +176,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                           fit: BoxFit.cover,
                         ),
                         Image.asset(
-                          'assets/images/banner2.jpg',
+                          'assets/images/banner2.png',
                           fit: BoxFit.cover,
                         ),
-                        // Add more banner images if needed
+                        Image.asset(
+                          'assets/images/banner3.png',
+                          fit: BoxFit.cover,
+                        ),
                       ],
                     ),
                   ],
