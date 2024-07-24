@@ -1,10 +1,6 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_constructors, avoid_print
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../data/api.dart';
 import '../../model/category.dart';
 import '../../model/product.dart';
@@ -21,7 +17,7 @@ class ProductAdd extends StatefulWidget {
 
 class _ProductAddState extends State<ProductAdd> {
   String? selectedCate;
-  List<Category> categorys = [];
+  List<Category> categories = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _desController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -84,7 +80,6 @@ class _ProductAddState extends State<ProductAdd> {
             price: price,
             description: des),
         pref.getString('token').toString());
-    setState(() {});
     Navigator.pop(context);
   }
 
@@ -95,7 +90,6 @@ class _ProductAddState extends State<ProductAdd> {
     final img = _imgController.text;
     final catId = _catIdController.text;
     var pref = await SharedPreferences.getInstance();
-    //update
     await APIRepository().updateProduct(
         Product(
             id: widget.productModel!.id,
@@ -107,11 +101,10 @@ class _ProductAddState extends State<ProductAdd> {
             description: des),
         pref.getString('accountID').toString(),
         pref.getString('token').toString());
-    setState(() {});
     Navigator.pop(context);
   }
 
-  _getCategories() async {
+  Future<void> _getCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var temp = await APIRepository().getCategory(
       prefs.getString('accountID') ?? '',
@@ -126,7 +119,7 @@ class _ProductAddState extends State<ProductAdd> {
         selectedCate = '';
         _catIdController.text = '';
       }
-      categorys = temp;
+      categories = temp;
     });
   }
 
@@ -140,11 +133,34 @@ class _ProductAddState extends State<ProductAdd> {
       _nameController.text = widget.productModel!.name;
       _desController.text = widget.productModel!.description;
       _priceController.text = widget.productModel!.price.toString();
-      if (widget.productModel!.imageUrl.isNotEmpty) {
-        setState(() {
-          _imgController.text = widget.productModel!.imageUrl.toString();
-          selectedImage = widget.productModel!.imageUrl;
-        });
+      _imgController.text = widget.productModel!.imageUrl;
+      selectedImage = widget.productModel!.imageUrl;
+      if (widget.productModel!.imageUrl.isNotEmpty &&
+          widget.productModel!.imageUrl != 'Null') {
+        Container(
+          height: 150,
+          width: 110,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          alignment: Alignment.center,
+          child: Image.network(
+            widget.productModel!.imageUrl,
+            loadingBuilder: (context, child, progress) {
+              return progress == null
+                  ? child
+                  : const CircularProgressIndicator();
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                widget.productModel!.imageUrl,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.error, color: Colors.red);
+                },
+              );
+            },
+          ),
+        );
       }
       _catIdController.text = widget.productModel!.categoryId.toString();
     }
@@ -234,16 +250,27 @@ class _ProductAddState extends State<ProductAdd> {
               const SizedBox(height: 16.0),
               if (selectedImage.isNotEmpty) ...[
                 Center(
-                  child: Image.asset(
+                  child: Image.network(
                     selectedImage,
-                    height: 150,
-                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      return progress == null
+                          ? child
+                          : const CircularProgressIndicator();
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        selectedImage,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        },
+                      );
+                    },
                   ),
-                )
+                ),
               ],
               const SizedBox(height: 20),
               const Text(
-                'Desciption:',
+                'Description:',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.w500,
@@ -272,33 +299,28 @@ class _ProductAddState extends State<ProductAdd> {
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            BorderSide(width: 50, color: Colors.white))),
+                            const BorderSide(width: 50, color: Colors.white))),
                 value: selectedCate,
-                items: categorys
+                items: categories
                     .map((item) => DropdownMenuItem<String>(
                           value: item.id.toString(),
                           child: Text(item.name,
                               style: const TextStyle(fontSize: 20)),
                         ))
                     .toList(),
-                //onChanged: (item) => setState(() => selectedCate = item),
                 onChanged: (item) {
-                  // final selectedCategoryId = int.tryParse(item ?? '');
                   setState(() {
                     selectedCate = item;
                     _catIdController.text = item.toString();
-                    print(_catIdController.text);
                   });
                 },
               ),
-              //image
-              const SizedBox(height: 16.0),
               const SizedBox(height: 20),
               SizedBox(
                 height: 50.0,
                 child: ElevatedButton(
                   onPressed: () async {
-                    widget.isUpdate ? _onUpdate() : _onSave();
+                    widget.isUpdate ? await _onUpdate() : await _onSave();
                   },
                   child: const Text(
                     'Save',

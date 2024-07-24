@@ -93,14 +93,10 @@ class _FavoriteDetailState extends State<FavoriteDetail> {
             children: [
               if (pro.img.isNotEmpty && pro.img != 'Null')
                 Container(
-                  height: 70,
-                  width: 70,
+                  height: 150,
+                  width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    image: DecorationImage(
-                      image: NetworkImage(pro.img),
-                      fit: BoxFit.cover,
-                    ),
                   ),
                   alignment: Alignment.center,
                   child: Image.network(
@@ -111,14 +107,19 @@ class _FavoriteDetailState extends State<FavoriteDetail> {
                           : const CircularProgressIndicator();
                     },
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error, color: Colors.red);
+                      return Image.asset(
+                        pro.img,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        },
+                      );
                     },
                   ),
                 )
               else
                 Container(
-                  height: 70,
-                  width: 70,
+                  height: 150,
+                  width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
                   ),

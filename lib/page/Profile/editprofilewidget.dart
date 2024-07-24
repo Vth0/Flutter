@@ -59,7 +59,10 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       if (token == null) {
         throw Exception("Token not found");
       }
-
+      user.fullName = _fullNameController.text;
+      user.gender = _genderController.text;
+      user.birthDay = _birthDayController.text;
+      user.phoneNumber = _phoneNumberController.text;
       bool result = await APIRepository().updateProfile(user, token);
 
       Flushbar(

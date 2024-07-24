@@ -111,46 +111,44 @@ class _CategoryBuilderState extends State<CategoryBuilder> {
                 ],
               ),
             ),
-            Column(
-              children: [
-                IconButton(
-                    onPressed: () async {
-                      SharedPreferences pref =
-                          await SharedPreferences.getInstance();
-                      setState(() async {
-                        await APIRepository().removeCategory(
-                            category.id,
-                            pref.getString('accountID').toString(),
-                            pref.getString('token').toString());
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    )),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      Navigator.of(context)
-                          .push(
-                            MaterialPageRoute(
-                              builder: (_) => CategoryAdd(
-                                isUpdate: true,
-                                categoryModel: category,
-                              ),
-                              fullscreenDialog: true,
+            IconButton(
+              onPressed: () async {
+                // Perform your async operation first
+                SharedPreferences pref = await SharedPreferences.getInstance();
+                await APIRepository().removeCategory(
+                  category.id,
+                  pref.getString('accountID').toString(),
+                  pref.getString('token').toString(),
+                );
+
+                // Then, update the state
+                setState(() {});
+              },
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+            ),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    Navigator.of(context)
+                        .push(
+                          MaterialPageRoute(
+                            builder: (_) => CategoryAdd(
+                              isUpdate: true,
+                              categoryModel: category,
                             ),
-                          )
-                          .then((_) => setState(() {}));
-                    });
-                  },
-                  icon: Icon(
-                    Icons.edit,
-                    color: Colors.yellow.shade800,
-                  ),
-                )
-              ],
-            )
+                            fullscreenDialog: true,
+                          ),
+                        )
+                        .then((_) => setState(() {}));
+                  });
+                },
+                icon: Icon(
+                  Icons.edit,
+                  color: Colors.yellow.shade800,
+                ))
           ],
         ),
       ),

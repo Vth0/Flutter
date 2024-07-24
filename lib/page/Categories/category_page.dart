@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,17 +84,41 @@ class _CategoryPageState extends State<CategoryPage> {
           crossAxisAlignment: CrossAxisAlignment
               .start, // Align all children to the start (left)
           children: [
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.all(16.0), // Add padding around the image
-                child: ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(10.0), // Add rounded corners
-                  child: _buildCategoryImage(category.imageUrl),
+            if (category.imageUrl.isNotEmpty && category.imageUrl != 'Null')
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
+                alignment: Alignment.center,
+                child: Image.network(
+                  category.imageUrl,
+                  loadingBuilder: (context, child, progress) {
+                    return progress == null
+                        ? child
+                        : const CircularProgressIndicator();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      category.imageUrl,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, color: Colors.red);
+                      },
+                    );
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.image, color: Colors.grey),
               ),
-            ),
             Padding(
               padding: const EdgeInsets.all(6),
               child: Center(
@@ -113,25 +135,5 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
       ),
     );
-  }
-
-  Widget _buildCategoryImage(String imageUrl) {
-    final file = File(imageUrl);
-    if (file.existsSync()) {
-      return Image.file(
-        file,
-        fit: BoxFit.cover,
-        width: double.infinity,
-      );
-    } else {
-      return Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.error, color: Colors.red);
-        },
-      );
-    }
   }
 }

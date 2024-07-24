@@ -58,36 +58,66 @@ class _ProductListByIdState extends State<ProductListById> {
             itemBuilder: (context, index) {
               final product = snapshot.data![index];
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(8.0),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProductDetailWidget(product: product),
+                        builder: (context) =>
+                            ProductDetailWidget(product: product),
                       ),
                     );
                   },
                   subtitle: Row(
                     children: [
-                      SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.error, color: Colors.red);
-                          },
+                      if (product.imageUrl.isNotEmpty &&
+                          product.imageUrl != 'Null')
+                        Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          alignment: Alignment.center,
+                          child: Image.network(
+                            product.imageUrl,
+                            loadingBuilder: (context, child, progress) {
+                              return progress == null
+                                  ? child
+                                  : const CircularProgressIndicator();
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                product.imageUrl,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.error,
+                                      color: Colors.red);
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      else
+                        Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.image, color: Colors.grey),
                         ),
-                      ),
                       const SizedBox(width: 8.0),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(product.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                             const SizedBox(height: 16.0),
                             Text(
                               'Giá: ${NumberFormat('#,##0').format(product.price)}',

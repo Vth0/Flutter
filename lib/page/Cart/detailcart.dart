@@ -138,7 +138,41 @@ class _DetailcartState extends State<Detailcart> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Image.network(product.img, width: 80, height: 80),
+            if (product.img.isNotEmpty && product.img != 'Null')
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: Image.network(
+                  product.img,
+                  loadingBuilder: (context, child, progress) {
+                    return progress == null
+                        ? child
+                        : const CircularProgressIndicator();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      product.img,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, color: Colors.red);
+                      },
+                    );
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.image, color: Colors.grey),
+              ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -149,7 +183,7 @@ class _DetailcartState extends State<Detailcart> {
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                     'Màu: ${product.des}',
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Padding(

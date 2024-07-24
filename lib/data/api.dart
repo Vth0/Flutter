@@ -159,8 +159,8 @@ class APIRepository {
   Future<bool> removeCategory(
       int categoryID, String accountID, String token) async {
     try {
-      final body =
-          FormData.fromMap({'categoryID': categoryID, 'accountID': accountID});
+      final body = FormData.fromMap(
+          {'categoryID': categoryID, 'accountID': '21DH114505'});
       Response res = await api.sendRequest.delete('/removeCategory',
           options: Options(headers: header(token)), data: body);
       if (res.statusCode == 200) {

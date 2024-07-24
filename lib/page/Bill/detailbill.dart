@@ -48,19 +48,17 @@ class DetailBill extends StatelessWidget {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(
-                            data.imageUrl,
-                            fit: BoxFit.cover,
-                            height: 100,
-                            width: 100,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: Colors.grey[300],
-                              width: 100,
-                              height: 100,
-                              child: const Icon(Icons.error),
-                            ),
-                          ),
+                          child: Image.network(data.imageUrl,
+                              fit: BoxFit.cover, height: 100, width: 100,
+                              errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              data.imageUrl,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.error,
+                                    color: Colors.red);
+                              },
+                            );
+                          }),
                         ),
                         const SizedBox(width: 10),
                         Expanded(

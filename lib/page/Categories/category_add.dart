@@ -110,6 +110,7 @@ class _CategoryAddState extends State<CategoryAdd> {
     _loadProductImages();
     if (widget.categoryModel != null && widget.isUpdate) {
       _nameController.text = widget.categoryModel!.name;
+      _imgController.text = widget.categoryModel!.imageUrl;
       _descController.text = widget.categoryModel!.desc;
     }
     if (widget.isUpdate) {
@@ -167,9 +168,8 @@ class _CategoryAddState extends State<CategoryAdd> {
                     const SizedBox(width: 8.0),
                     ElevatedButton(
                       onPressed: () => _showImagePicker(context),
-                      child: Text(selectedImage.isEmpty
-                          ? 'Chọn ảnh'
-                          : 'Thay đổi ảnh'),
+                      child: Text(
+                          selectedImage.isEmpty ? 'Chọn ảnh' : 'Thay đổi ảnh'),
                     ),
                   ],
                 ),
