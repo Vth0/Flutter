@@ -1,51 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/data/api.dart';
+import 'package:flutter_application_smartshop/data/sqlite.dart';
+import 'package:flutter_application_smartshop/page/mainpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../model/cart.dart';
 
 class Checkout extends StatefulWidget {
-  const Checkout({super.key});
+  final List<Cart> cartItems;
+
+  const Checkout({super.key, required this.cartItems});
 
   @override
   State<Checkout> createState() => _CheckoutState();
 }
 
 class _CheckoutState extends State<Checkout> {
-  // Sample data for the product list and other sections.
-  // In a real application, this data would be fetched from a backend or state management solution.
-  final List<ProductItem> _cartItems = [
-    ProductItem(
-      imageUrl: 'assets/images/laptop.png',
-      name: 'iPhone 15 Plus 128GB',
-      color: 'Hồng',
-      price: 22590000,
-      quantity: 1,
-    ),
-    ProductItem(
-      imageUrl: 'assets/images/laptop.png',
-      name: 'Laptop Asus TUF Gaming A15', 
-      color: 'Đen',
-      price: 17990000,
-      quantity: 1,
-    ),
-    ProductItem(
-      imageUrl: 'assets/images/laptop.png',
-      name: 'Mi Band 8',
-      color: 'Đen',
-      price: 690000,
-      quantity: 1,
-    ),ProductItem(
-      imageUrl: 'assets/images/laptop.png',
-      name: 'Mi Band 8',
-      color: 'Đen',
-      price: 690000,
-      quantity: 1,
-    ),
-    ProductItem(
-      imageUrl: 'assets/images/laptop.png',
-      name: 'Mi Band 8',
-      color: 'Đen',
-      price: 690000,
-      quantity: 1,
-    ),
-  ];
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -59,18 +30,44 @@ class _CheckoutState extends State<Checkout> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AddressSection(),
+            const AddressSection(),
             const SizedBox(height: 10),
-            SizedBox(height: 300,
-            child: ProductListSection(cartItems: _cartItems),
+            SizedBox(
+              height: 300,
+              child: ProductListSection(cartItems: widget.cartItems),
             ),
             const SizedBox(height: 10),
-
-            PaymentMethodSection(),
+            const PaymentMethodSection(),
             const SizedBox(height: 10),
-            OrderSummarySection(cartItems: _cartItems),
+            OrderSummarySection(cartItems: widget.cartItems),
             const Spacer(),
-            CheckoutButton(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  List<Cart> temp = await _databaseHelper.products();
+                  await APIRepository()
+                      .addBill(temp, pref.getString('token') ?? '');
+                  setState(() {
+                    _databaseHelper.clear();
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Mainpage(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text('Thanh toán',
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+            )
           ],
         ),
       ),
@@ -79,15 +76,17 @@ class _CheckoutState extends State<Checkout> {
 }
 
 class AddressSection extends StatelessWidget {
+  const AddressSection({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return const Card(
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
               'Địa chỉ nhận hàng:',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -102,16 +101,22 @@ class AddressSection extends StatelessWidget {
 }
 
 class ProductListSection extends StatelessWidget {
-  final List<ProductItem> cartItems;
+  final List<Cart> cartItems;
 
-  const ProductListSection({required this.cartItems});
+  const ProductListSection({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: cartItems.map((item) {
-          return item;
+          return ProductItem(
+            imageUrl: item.img,
+            name: item.name,
+            des: item.des, // Assuming 'des' is used as color here
+            price: item.price,
+            quantity: item.count,
+          );
         }).toList(),
       ),
     );
@@ -121,14 +126,15 @@ class ProductListSection extends StatelessWidget {
 class ProductItem extends StatelessWidget {
   final String imageUrl;
   final String name;
-  final String color;
-  final int price;
+  final String des;
+  final dynamic price;
   final int quantity;
 
   const ProductItem({
+    super.key,
     required this.imageUrl,
     required this.name,
-    required this.color,
+    required this.des,
     required this.price,
     required this.quantity,
   });
@@ -141,15 +147,22 @@ class ProductItem extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Image.asset(imageUrl, width: 50, height: 50),
+            Image.network(imageUrl, width: 50, height: 50),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('Màu: $color'),
-                  Text('x$quantity'),
+                  Text(
+                    name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Mô tả: $des',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text('Số lượng: x$quantity'),
                 ],
               ),
             ),
@@ -161,11 +174,12 @@ class ProductItem extends StatelessWidget {
   }
 }
 
-
 class PaymentMethodSection extends StatelessWidget {
+  const PaymentMethodSection({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return const Card(
       elevation: 2,
       child: ListTile(
         leading: Icon(Icons.payment),
@@ -177,13 +191,14 @@ class PaymentMethodSection extends StatelessWidget {
 }
 
 class OrderSummarySection extends StatelessWidget {
-  final List<ProductItem> cartItems;
+  final List<Cart> cartItems;
 
-  const OrderSummarySection({required this.cartItems});
+  const OrderSummarySection({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
-    int totalPrice = cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
+    num totalPrice =
+        cartItems.fold(0, (sum, item) => sum + (item.price * item.count));
 
     return Card(
       elevation: 2,
@@ -192,10 +207,11 @@ class OrderSummarySection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Chi tiết thanh toán', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Chi tiết thanh toán',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
-            // Adjust this value according to your logic for vouchers, etc.
-            OrderSummaryItem(label: 'Tổng thanh toán', value: '$totalPrice đ', isBold: true),
+            OrderSummaryItem(
+                label: 'Tổng thanh toán', value: '$totalPrice đ', isBold: true),
           ],
         ),
       ),
@@ -209,6 +225,7 @@ class OrderSummaryItem extends StatelessWidget {
   final bool isBold;
 
   const OrderSummaryItem({
+    super.key,
     required this.label,
     required this.value,
     this.isBold = false,
@@ -219,28 +236,17 @@ class OrderSummaryItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-        Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-      ],
-    );
-  }
-}
-
-class CheckoutButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        onPressed: () {
-          // Handle checkout process
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          minimumSize: Size(double.infinity, 50),
+        Text(
+          label,
+          style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
         ),
-        child: const Text('Thanh toán', style: TextStyle(fontSize: 18)),
-      ),
+        Text(
+          value,
+          style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
+        ),
+      ],
     );
   }
 }

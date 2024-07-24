@@ -1,6 +1,3 @@
-import 'dart:io';
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/data/api.dart';
 import 'package:flutter_application_smartshop/model/category.dart';
@@ -46,98 +43,109 @@ class _CategoryBuilderState extends State<CategoryBuilder> {
     );
   }
 
-  Widget _buildCategory(Category breed, BuildContext context) {
+  Widget _buildCategory(Category category, BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            Container(
-              height: 40.0,
-              width: 40.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey[300],
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                breed.id.toString(),
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
+            Text(
+              category.id.toString(),
+              style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Container(
-              height: 110,
-              width: 110,
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: Colors.white,
-                image: DecorationImage(
-                  image: AssetImage(breed.imageUrl),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Image(
-                  width: 128,
-                  height: 128,
-                  fit: BoxFit.cover,
-                  image: FileImage(File(breed.imageUrl))),
+            const SizedBox(
+              width: 10,
             ),
+            if (category.imageUrl.isNotEmpty && category.imageUrl != 'Null')
+              Container(
+                height: 150,
+                width: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: Image.network(
+                  category.imageUrl,
+                  loadingBuilder: (context, child, progress) {
+                    return progress == null
+                        ? child
+                        : const CircularProgressIndicator();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.error, color: Colors.red);
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 150,
+                width: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.image, color: Colors.grey),
+              ),
             const SizedBox(width: 20.0),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    breed.name,
+                    category.name,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4.0),
-                  Text(breed.desc),
+                  Text(category.desc),
                 ],
               ),
             ),
-            IconButton(
-                onPressed: () async {
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-                  setState(() async {
-                    await APIRepository().removeCategory(
-                        breed.id,
-                        pref.getString('accountID').toString(),
-                        pref.getString('token').toString());
-                  });
-                },
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                )),
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (_) => CategoryAdd(
-                              isUpdate: true,
-                              categoryModel: breed,
+            Column(
+              children: [
+                IconButton(
+                    onPressed: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      setState(() async {
+                        await APIRepository().removeCategory(
+                            category.id,
+                            pref.getString('accountID').toString(),
+                            pref.getString('token').toString());
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    )),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      Navigator.of(context)
+                          .push(
+                            MaterialPageRoute(
+                              builder: (_) => CategoryAdd(
+                                isUpdate: true,
+                                categoryModel: category,
+                              ),
+                              fullscreenDialog: true,
                             ),
-                            fullscreenDialog: true,
-                          ),
-                        )
-                        .then((_) => setState(() {}));
-                  });
-                },
-                icon: Icon(
-                  Icons.edit,
-                  color: Colors.yellow.shade800,
-                ))
+                          )
+                          .then((_) => setState(() {}));
+                    });
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.yellow.shade800,
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ),

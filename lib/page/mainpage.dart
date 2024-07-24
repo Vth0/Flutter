@@ -1,14 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/page/Account/accountwidget.dart';
 import 'package:flutter_application_smartshop/page/Cart/cartwidget.dart';
 //import 'package:flutter_application_smartshop/page/Categories/category_page.dart';
 import 'package:flutter_application_smartshop/page/Categories/categorywidget.dart';
+import 'package:flutter_application_smartshop/page/Favorite/favorite.dart';
 
-import 'package:flutter_application_smartshop/page/Favorite/favoritewidget.dart';
 import 'package:flutter_application_smartshop/page/Home/homewidget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/user.dart';
 //import 'package:flutter_application_smartshop/page/Profile/profilewidget.dart';
@@ -29,34 +26,18 @@ class _MainpageState extends State<Mainpage> {
     const Cartwidget(),
     const FavoriteWidget(),
     const AccountWidget()
-    //ProfileWidget()
   ];
-
-  getDataUser() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String? strUser = pref.getString('user');
-
-    try {
-      if (strUser != null && strUser.isNotEmpty) {
-        setState(() {
-          user = User.fromJson(jsonDecode(strUser));
-        });
-      } else {
-        setState(() {
-          user = User.userEmpty();
-        });
-      }
-    } catch (e) {
-      setState(() {
-        user = User.userEmpty();
-      });
-    }
-  }
+  static const List<String> _appBarTitles = [
+    "Trang chủ",
+    "Phân loại",
+    "Giỏ hàng",
+    "Danh sách yêu thích",
+    "Trang cá nhân"
+  ];
 
   @override
   void initState() {
     super.initState();
-    getDataUser();
   }
 
   void _onTapped(int index) {
@@ -65,10 +46,19 @@ class _MainpageState extends State<Mainpage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _selectedIndex == 0
+          ? null
+          : AppBar(
+              title: Text(
+                _appBarTitles[_selectedIndex],
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.blue,
+              automaticallyImplyLeading: false),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

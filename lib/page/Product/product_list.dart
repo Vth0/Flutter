@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'product_add.dart';
@@ -15,10 +14,6 @@ class _ProductListState extends State<ProductList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Product List"),
-      ),
       body: const Center(child: ProductBuilder()),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

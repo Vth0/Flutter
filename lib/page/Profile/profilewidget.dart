@@ -7,10 +7,6 @@ class ProfileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cá nhân'),
-        backgroundColor: Colors.blue,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -26,7 +22,7 @@ class ProfileWidget extends StatelessWidget {
                     const CircleAvatar(
                       radius: 40.0,
                       backgroundImage: AssetImage(
-                          'assets/images/image.png'), // Đường dẫn tới ảnh đại diện
+                          'assets/images/image.png'), // Path to the avatar image
                     ),
                     const SizedBox(width: 16.0),
                     Column(
@@ -37,20 +33,27 @@ class ProfileWidget extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
+                            color: Colors
+                                .white, // Set text color to contrast with the background
                           ),
                         ),
                         Text(
                           'Thành viên',
                           style: TextStyle(
                             fontSize: 14.0,
-                            color: Colors.grey[600],
+                            color: Colors.grey[
+                                300], // Adjust text color to contrast with the background
                           ),
                         ),
                       ],
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.edit),
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Colors
+                            .white, // Icon color to contrast with the background
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -103,6 +106,7 @@ class ProfileWidget extends StatelessWidget {
                 // Xử lý sự kiện khi nhấn vào mục
               },
             ),
+            
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Đăng xuất'),

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/page/Cart/checkout.dart';
 import 'package:intl/intl.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-
-// import '../../data/api.dart';
 import '../../data/sqlite.dart';
 import '../../model/cart.dart';
+import 'checkout.dart';
 
 class Detailcart extends StatefulWidget {
   const Detailcart({super.key});
@@ -112,35 +109,21 @@ class _DetailcartState extends State<Detailcart> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
               onPressed: () async {
-                // SharedPreferences pref = await SharedPreferences.getInstance();
-                // List<Cart> temp = await _databaseHelper.products();
-                // String token = pref.getString('token') ?? '';
-
-                
-                // await APIRepository()
-                //     .addBill(temp, pref.getString('token').toString());
-                // setState(() {
-                //   _databaseHelper.clear();
-                // });
+                List<Cart> cartItems = await _getProducts();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Checkout(),
+                    builder: (context) => Checkout(cartItems: cartItems),
                   ),
                 );
               },
-              child: const Text(
-                "Thanh toán",
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                minimumSize: const Size(double.infinity, 50),
               ),
+              child: const Text('Thanh toán',
+                  style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
           ),
         ],
@@ -148,108 +131,72 @@ class _DetailcartState extends State<Detailcart> {
     );
   }
 
-  Widget _buildProduct(Cart pro, BuildContext context) {
+  Widget _buildProduct(Cart product, BuildContext context) {
     return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            if (pro.img.isNotEmpty && pro.img != 'Null')
-              Container(
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  image: DecorationImage(
-                    image: NetworkImage(pro.img),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Image.network(
-                  pro.img,
-                  loadingBuilder: (context, child, progress) {
-                    return progress == null
-                        ? child
-                        : const CircularProgressIndicator();
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.error, color: Colors.red);
-                  },
-                ),
-              )
-            else
-              Container(
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                alignment: Alignment.center,
-                child: const Icon(Icons.image, color: Colors.grey),
-              ),
+            Image.network(product.img, width: 80, height: 80),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  Text(product.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                    pro.name,
-                    style: const TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w500,
+                    'Màu: ${product.des}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: Row(
+                      children: [
+                        const Text('Số lượng: '),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _databaseHelper.minus(product);
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.remove_circle_outline,
+                            color: Colors.black,
+                            size: 16,
+                          ),
+                        ),
+                        Text(
+                          '${product.count}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _databaseHelper.add(product);
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.add_circle_outline,
+                            color: Colors.black,
+                            size: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    NumberFormat('###,###.0').format(pro.price),
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.red,
-                    ),
+                  const SizedBox(
+                    height: 5,
                   ),
-                  const SizedBox(height: 4.0),
-                  Text('Số lượng: ${pro.count}'),
+                  Text('Đơn giá: ${product.price.toString()}đ'),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text('Tổng giá: ${product.price * product.count}đ')
                 ],
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _databaseHelper.minus(pro);
-                });
-              },
-              icon: Icon(
-                Icons.remove_circle_outline,
-                color: Colors.yellow.shade800,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _databaseHelper.deleteProduct(pro.productID);
-                });
-              },
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _databaseHelper.add(pro);
-                });
-              },
-              icon: Icon(
-                Icons.add_circle_outline,
-                color: Colors.yellow.shade800,
               ),
             ),
           ],

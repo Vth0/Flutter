@@ -19,7 +19,7 @@ class Bill {
       );
 }
 
-class BillDetailModel {
+class BillDetail {
   int productId;
   String productName;
   dynamic imageUrl;
@@ -27,7 +27,7 @@ class BillDetailModel {
   int count;
   int total;
 
-  BillDetailModel({
+  BillDetail({
     required this.productId,
     required this.productName,
     required this.imageUrl,
@@ -36,8 +36,8 @@ class BillDetailModel {
     required this.total,
   });
 
-  factory BillDetailModel.fromJson(Map<String, dynamic> json) =>
-      BillDetailModel(
+  factory BillDetail.fromJson(Map<String, dynamic> json) =>
+      BillDetail(
         productId: json["productID"] ?? 0,
         productName: json["productName"] ?? "",
         imageUrl: json["imageURL"] ?? "",

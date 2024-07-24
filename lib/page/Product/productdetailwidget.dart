@@ -85,10 +85,6 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                 height: 300,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  image: DecorationImage(
-                    image: NetworkImage(widget.product.imageUrl),
-                    fit: BoxFit.cover,
-                  ),
                 ),
                 alignment: Alignment.center,
                 child: Image.network(
