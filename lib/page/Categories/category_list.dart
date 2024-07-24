@@ -13,10 +13,6 @@ class _CategoryListState extends State<CategoryList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Category List"),
-      ),
       body: const Center(child: CategoryBuilder()),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

@@ -1,11 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_smartshop/data/api.dart';
 import 'package:flutter_application_smartshop/model/category.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoryAdd extends StatefulWidget {
@@ -20,31 +19,19 @@ class CategoryAdd extends StatefulWidget {
 class _CategoryAddState extends State<CategoryAdd> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
+  final TextEditingController _imgController = TextEditingController();
   String titleText = "";
 
-  String? _imagePath;
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _getImageFromGallery() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-        _imagePath = image.path; // Lưu đường dẫn vào biến _imagePath
-      });
-    }
-  }
+  List<String> categoriesImages = [];
+  String selectedImage = '';
 
   Future<void> _onSave() async {
     final name = _nameController.text;
     final description = _descController.text;
-    final image = _imagePath;
+    final image = _imgController.text;
     var pref = await SharedPreferences.getInstance();
     await APIRepository().addCategory(
-        Category(
-            id: 0, name: name, imageUrl: image ?? '', desc: description),
+        Category(id: 0, name: name, imageUrl: image, desc: description),
         pref.getString('accountID').toString(),
         pref.getString('token').toString());
     // await _databaseService
@@ -53,10 +40,20 @@ class _CategoryAddState extends State<CategoryAdd> {
     Navigator.pop(context);
   }
 
+  Future<void> _loadProductImages() async {
+    final manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+    const productsDir = 'assets/images/categories/';
+    categoriesImages = manifestMap.keys
+        .where((String key) => key.startsWith(productsDir))
+        .toList();
+  }
+
   Future<void> _onUpdate(int id) async {
     final name = _nameController.text;
     final description = _descController.text;
-    final image = _imagePath;
+    final image = _imgController.text;
     var pref = await SharedPreferences.getInstance();
 
     //update
@@ -65,16 +62,52 @@ class _CategoryAddState extends State<CategoryAdd> {
         Category(
             id: widget.categoryModel!.id,
             name: name,
-            imageUrl: image ?? '',
+            imageUrl: image,
             desc: description),
         pref.getString('accountID').toString(),
         pref.getString('token').toString());
     Navigator.pop(context);
   }
 
+  void _showImagePicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: 300,
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+              ),
+              itemCount: categoriesImages.length,
+              itemBuilder: (context, index) {
+                final image = categoriesImages[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _imgController.text = image;
+                      selectedImage = image;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(image),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadProductImages();
     if (widget.categoryModel != null && widget.isUpdate) {
       _nameController.text = widget.categoryModel!.name;
       _descController.text = widget.categoryModel!.desc;
@@ -120,30 +153,27 @@ class _CategoryAddState extends State<CategoryAdd> {
                 ),
                 const SizedBox(height: 12.0),
                 Row(
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: _getImageFromGallery,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.blue, // Example custom button color
-                        textStyle: const TextStyle(fontSize: 16.0),
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _imgController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Select image',
+                        ),
                       ),
-                      child: const Text('Select Image', style: TextStyle(color: Colors.white),),
                     ),
-                    const SizedBox(width: 12.0),
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.grey), // Example border color
-                      ),
-                      child: _image == null
-                          ? const Placeholder()
-                          : Image.file(_image!, fit: BoxFit.cover),
+                    const SizedBox(width: 8.0),
+                    ElevatedButton(
+                      onPressed: () => _showImagePicker(context),
+                      child: Text(selectedImage.isEmpty
+                          ? 'Select image'
+                          : 'Change image'),
                     ),
                   ],
                 ),
+                const SizedBox(height: 16.0),
                 const SizedBox(height: 12.0),
                 TextField(
                   controller: _descController,
@@ -170,7 +200,7 @@ class _CategoryAddState extends State<CategoryAdd> {
                   ),
                   child: const Text(
                     'Save',
-                    style: TextStyle(fontSize: 16.0),
+                    style: TextStyle(fontSize: 16.0, color: Colors.white),
                   ),
                 ),
               ],

@@ -75,7 +75,12 @@ class _CategoryBuilderState extends State<CategoryBuilder> {
                         : const CircularProgressIndicator();
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.error, color: Colors.red);
+                    return Image.asset(
+                      category.imageUrl,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, color: Colors.red);
+                      },
+                    );
                   },
                 ),
               )
@@ -89,7 +94,7 @@ class _CategoryBuilderState extends State<CategoryBuilder> {
                 alignment: Alignment.center,
                 child: const Icon(Icons.image, color: Colors.grey),
               ),
-            const SizedBox(width: 20.0),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
