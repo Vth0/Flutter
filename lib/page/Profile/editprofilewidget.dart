@@ -60,9 +60,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         throw Exception("Token not found");
       }
 
-      // Tạo đối tượng User
-      User user = User.userEmpty();
-
       bool result = await APIRepository().updateProfile(user, token);
 
       Flushbar(

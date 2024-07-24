@@ -85,11 +85,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
   getGender() {
     if (_gender == 1) {
-      return "Male";
+      return "Nam";
     } else if (_gender == 2) {
-      return "Female";
+      return "Nữ";
     }
-    return "Other";
+    return "Khác";
   }
 
   Widget textField(

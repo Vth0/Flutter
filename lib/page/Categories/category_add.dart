@@ -113,9 +113,9 @@ class _CategoryAddState extends State<CategoryAdd> {
       _descController.text = widget.categoryModel!.desc;
     }
     if (widget.isUpdate) {
-      titleText = "Update Category";
+      titleText = "Cập nhật phân loại";
     } else {
-      titleText = "Add New Category";
+      titleText = "Thêm phân loại mới";
     }
   }
 
@@ -148,7 +148,7 @@ class _CategoryAddState extends State<CategoryAdd> {
                       borderSide: BorderSide(
                           color: Colors.grey), // Example border color
                     ),
-                    hintText: 'Enter name',
+                    hintText: 'Nhập tên phân loại',
                   ),
                 ),
                 const SizedBox(height: 12.0),
@@ -160,7 +160,7 @@ class _CategoryAddState extends State<CategoryAdd> {
                         controller: _imgController,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          hintText: 'Select image',
+                          hintText: 'Chọn ảnh',
                         ),
                       ),
                     ),
@@ -168,8 +168,8 @@ class _CategoryAddState extends State<CategoryAdd> {
                     ElevatedButton(
                       onPressed: () => _showImagePicker(context),
                       child: Text(selectedImage.isEmpty
-                          ? 'Select image'
-                          : 'Change image'),
+                          ? 'Chọn ảnh'
+                          : 'Thay đổi ảnh'),
                     ),
                   ],
                 ),
@@ -183,7 +183,7 @@ class _CategoryAddState extends State<CategoryAdd> {
                       borderSide: BorderSide(
                           color: Colors.grey), // Example border color
                     ),
-                    hintText: 'Enter description',
+                    hintText: 'Nhập mô tả',
                   ),
                 ),
                 const SizedBox(height: 16.0),
@@ -199,7 +199,7 @@ class _CategoryAddState extends State<CategoryAdd> {
                         vertical: 12.0), // Example padding
                   ),
                   child: const Text(
-                    'Save',
+                    'Lưu',
                     style: TextStyle(fontSize: 16.0, color: Colors.white),
                   ),
                 ),

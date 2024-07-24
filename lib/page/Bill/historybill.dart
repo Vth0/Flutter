@@ -101,7 +101,7 @@ class _HistoryBillState extends State<HistoryBill> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Bill ID: ${bill.id.length > 10 ? '${bill.id.substring(0, 10)}...' : bill.id}',
+                    'Mã hóa đơn: ${bill.id.length > 10 ? '${bill.id.substring(0, 10)}...' : bill.id}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -121,14 +121,14 @@ class _HistoryBillState extends State<HistoryBill> {
               ),
               SizedBox(height: 8),
               Text(
-                'Customer: ${bill.fullName}',
+                'Khách hàng: ${bill.fullName}',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
               SizedBox(height: 4),
               Text(
-                "Date created: ${bill.dateCreated}",
+                "Ngày tạo: ${bill.dateCreated}",
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey,

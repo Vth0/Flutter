@@ -95,13 +95,19 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                         : const CircularProgressIndicator();
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.error, color: Colors.red);
+                    return Image.asset(
+                      widget.product.imageUrl,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, color: Colors.red);
+                      },
+                    );
                   },
                 ),
               )
             else
               Container(
-                height: 300,
+                height: 150,
+                width: 110,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -231,7 +237,6 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
   }
 
   String formatDescription(String description, String cate) {
-    // Parse chuỗi JSON
     final Map<String, dynamic> data = json.decode('{$description}');
 
     // Tạo chuỗi định dạng

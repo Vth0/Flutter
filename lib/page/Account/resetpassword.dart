@@ -29,13 +29,13 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
         _newPasswordController.text,
       );
       Flushbar(
-        title: "Reset password",
+        title: "Đặt lại mật khẩu",
         message: result,
         duration: const Duration(seconds: 3),
       ).show(context);
     } catch (e) {
       Flushbar(
-        title: "Reset password",
+        title: "Đặt lại mật khẩu",
         message: "Thiêt lập lại mật khẩu thất bại: $e",
         duration: const Duration(seconds: 3),
       ).show(context);
@@ -49,7 +49,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Reset Password'),
+      title: const Text('Đặt lại mật khẩu'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -58,7 +58,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
             child: TextField(
               controller: _accountIDController,
               decoration: InputDecoration(
-                hintText: 'Account ID...',
+                hintText: 'Tên đăng nhập...',
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
@@ -66,13 +66,16 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
                 ),
               ),
             ),
+          ),
+          const SizedBox(
+            height: 8,
           ),
           SizedBox(
             width: 400,
             child: TextField(
               controller: _numberIDController,
               decoration: InputDecoration(
-                hintText: 'Number ID...',
+                hintText: 'Số ID...',
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
@@ -81,12 +84,15 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
               ),
             ),
           ),
+          const SizedBox(
+            height: 8,
+          ),
           SizedBox(
             width: 400,
             child: TextField(
               controller: _newPasswordController,
               decoration: InputDecoration(
-                hintText: 'New Password...',
+                hintText: 'Mật khẩu mới...',
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
@@ -102,13 +108,13 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel'),
+          child: const Text('Hủy'),
         ),
         TextButton(
           onPressed: _isLoading ? null : _resetPassword,
           child: _isLoading
               ? const CircularProgressIndicator()
-              : const Text('Reset Password'),
+              : const Text('Đặt lại mật khẩu'),
         ),
       ],
     );
