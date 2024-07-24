@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter_application_smartshop/data/api.dart';
@@ -14,41 +16,43 @@ class ChangePasswordWidget extends StatefulWidget {
 class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
-  
 
   @override
   void initState() {
     super.initState();
     //autoLogin();
   }
+
   Future<void> _changePassword() async {
     setState(() {
       _isLoading = true;
     });
-    
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
-      if (token == null) {
-        throw Exception("Token not found");
-      }
+    if (token == null) {
+      throw Exception("Token not found");
+    }
     String oldPassword = _oldPasswordController.text;
     String newPassword = _newPasswordController.text;
     String confirmPassword = _confirmPasswordController.text;
-    String result = await APIRepository().changePassword(oldPassword, newPassword, confirmPassword, token);
+    String result = await APIRepository()
+        .changePassword(oldPassword, newPassword, confirmPassword, token);
     if (newPassword != confirmPassword) {
-    Flushbar(
-      title: "Failed change password",
-      message: "New password and confirm password do not match",
-      duration: const Duration(seconds: 3),
-    ).show(context);
-    setState(() {
-      _isLoading = false;
-    });
-    return;
-  }
+      Flushbar(
+        title: "Failed change password",
+        message: "New password and confirm password do not match",
+        duration: const Duration(seconds: 3),
+      ).show(context);
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     try {
       Flushbar(
         title: "Change Password",
@@ -132,19 +136,22 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
               onPressed: _isLoading ? null : _changePassword,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 textStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(25.0),
                 ),
               ),
               child: _isLoading
                   ? const CircularProgressIndicator()
-                  : const Text('Change Password'),
-                  
+                  : const Text(
+                      'Change Password',
+                      style: TextStyle(color: Colors.white),
+                    ),
             ),
           ],
         ),

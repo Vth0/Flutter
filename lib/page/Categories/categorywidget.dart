@@ -11,18 +11,16 @@ class Categorywidget extends StatefulWidget {
 
   @override
   State<Categorywidget> createState() => _CategorywidgetState();
-  
 }
 
 class _CategorywidgetState extends State<Categorywidget> {
-
   Future<List<Category>> _getCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return await APIRepository().getCategory(
         prefs.getString('accountID').toString(),
         prefs.getString('token').toString());
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,14 +40,15 @@ class _CategorywidgetState extends State<Categorywidget> {
       ),
     );
   }
+
   Widget _buildCategoryGrid(List<Category> categories) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
           childAspectRatio: 0.75,
         ),
         itemCount: categories.length,
@@ -60,6 +59,7 @@ class _CategorywidgetState extends State<Categorywidget> {
       ),
     );
   }
+
   Widget _buildCategoryItem(Category category) {
     return GestureDetector(
       onTap: () {

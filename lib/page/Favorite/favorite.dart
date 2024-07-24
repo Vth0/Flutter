@@ -1,23 +1,21 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_smartshop/page/Cart/detailcart.dart';
+import 'package:flutter_application_smartshop/page/Favorite/favoritewidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/user.dart';
 import '../Account/unloginwidget.dart';
 import '../loadingScreen.dart';
 
-class Cartwidget extends StatefulWidget {
-  const Cartwidget({super.key});
+class FavoriteWidget extends StatefulWidget {
+  const FavoriteWidget({super.key});
 
   @override
-  State<Cartwidget> createState() => _CartwidgetState();
+  State<FavoriteWidget> createState() => _FavoriteWidgetState();
 }
 
-class _CartwidgetState extends State<Cartwidget> {
+class _FavoriteWidgetState extends State<FavoriteWidget> {
   bool _isLoggedIn = false;
   bool _isLoading = true;
 
@@ -45,8 +43,7 @@ class _CartwidgetState extends State<Cartwidget> {
       });
     }
 
-    await Future.delayed(const Duration(seconds: 2));
-
+    await Future.delayed(const Duration(seconds: 1));
     setState(() {
       _isLoading = false;
     });
@@ -58,7 +55,7 @@ class _CartwidgetState extends State<Cartwidget> {
       body: _isLoading
           ? const Center(child: Loadingscreen())
           : _isLoggedIn
-              ? const Detailcart()
+              ? const FavoriteDetail()
               : const Unloginwidget(),
     );
   }

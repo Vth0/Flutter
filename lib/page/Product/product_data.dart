@@ -1,10 +1,9 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_smartshop/model/product.dart';
 import 'package:intl/intl.dart';
 import '../../data/api.dart';
-import '../../model/product.dart';
 import 'product_add.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,7 +48,7 @@ class _ProductBuilderState extends State<ProductBuilder> {
     );
   }
 
-  Widget _buildProduct(Product pro, BuildContext context) {
+  Widget _buildProduct(Product product, BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -60,7 +59,7 @@ class _ProductBuilderState extends State<ProductBuilder> {
               width: 20,
               alignment: Alignment.center,
               child: Text(
-                pro.id.toString(),
+                product.id.toString(),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -68,90 +67,109 @@ class _ProductBuilderState extends State<ProductBuilder> {
               ),
             ),
             const SizedBox(width: 10),
-            Container(
-              height: 110,
-              width: 110,
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: Colors.white,
-                image: DecorationImage(
-                  image: AssetImage(pro.imageUrl),
-                  fit: BoxFit.cover,
+            if (product.imageUrl.isNotEmpty && product.imageUrl != 'Null')
+              Container(
+                height: 150,
+                width: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
+                alignment: Alignment.center,
+                child: Image.network(
+                  product.imageUrl,
+                  loadingBuilder: (context, child, progress) {
+                    return progress == null
+                        ? child
+                        : const CircularProgressIndicator();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.error, color: Colors.red);
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 150,
+                width: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.image, color: Colors.grey),
               ),
-              alignment: Alignment.center,
-              child: Image(
-                width: 128,
-                height: 128,
-                fit: BoxFit.cover,
-                image: FileImage(File(pro.imageUrl)),
-              ),
-            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    pro.name,
+                    product.name,
                     style: const TextStyle(
-                      fontSize: 20.0,
+                      fontSize: 16.0,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    NumberFormat('#,##0').format(pro.price),
+                    NumberFormat('#,##0').format(product.price),
                     style: const TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 15.0,
                       fontWeight: FontWeight.normal,
                       color: Colors.red,
                     ),
                   ),
                   const SizedBox(height: 4.0),
-                  Text('Description: ${pro.description}'),
+                  Text(
+                    'Description: ${product.description}',
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
-            IconButton(
-                onPressed: () async {
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-                  setState(
-                    () async {
-                      await APIRepository().removeProduct(
-                          pro.id,
-                          pref.getString('accountID').toString(),
-                          pref.getString('token').toString());
+            Column(
+              children: [
+                IconButton(
+                    onPressed: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      setState(
+                        () async {
+                          await APIRepository().removeProduct(
+                              product.id,
+                              pref.getString('accountID').toString(),
+                              pref.getString('token').toString());
+                        },
+                      );
                     },
-                  );
-                },
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                )),
-            IconButton(
-              onPressed: () {
-                setState(
-                  () {
-                    Navigator.of(context)
-                        .push(
-                          MaterialPageRoute(
-                            builder: (_) => ProductAdd(
-                              isUpdate: true,
-                              productModel: pro,
-                            ),
-                            fullscreenDialog: true,
-                          ),
-                        )
-                        .then((_) => setState(() {}));
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    )),
+                IconButton(
+                  onPressed: () {
+                    setState(
+                      () {
+                        Navigator.of(context)
+                            .push(
+                              MaterialPageRoute(
+                                builder: (_) => ProductAdd(
+                                  isUpdate: true,
+                                  productModel: product,
+                                ),
+                                fullscreenDialog: true,
+                              ),
+                            )
+                            .then((_) => setState(() {}));
+                      },
+                    );
                   },
-                );
-              },
-              icon: Icon(
-                Icons.edit,
-                color: Colors.yellow.shade800,
-              ),
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.yellow.shade800,
+                  ),
+                )
+              ],
             )
           ],
         ),

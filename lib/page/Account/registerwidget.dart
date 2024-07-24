@@ -18,31 +18,69 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   int _gender = 0;
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
-  // final TextEditingController _numberIDController = TextEditingController();
+  final TextEditingController _numberIDController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   // final TextEditingController _schoolKeyController = TextEditingController();
-  // final TextEditingController _schoolYearController = TextEditingController();
   final TextEditingController _birthDayController = TextEditingController();
+  final TextEditingController _schoolYearController = TextEditingController();
   final TextEditingController _imageURL = TextEditingController();
   String gendername = 'None';
   String temp = '';
 
-  Future<String> register() async {
-    return await APIRepository().register(Signup(
-        accountID: _accountController.text,
-        birthDay: _birthDayController.text,
-        password: _passwordController.text,
-        confirmPassword: _confirmPasswordController.text,
-        fullName: _fullNameController.text,
-        phoneNumber: _phoneNumberController.text,
-        schoolKey: 'HUFLIT',
-        schoolYear: '2024',
-        gender: getGender(),
-        imageUrl: _imageURL.text,
-        numberID: '2XDHXXXXXX'));
+  Future<void> register() async {
+    try {
+      String response = await APIRepository().register(
+        Signup(
+          accountID: _accountController.text,
+          birthDay: _birthDayController.text,
+          password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
+          fullName: _fullNameController.text,
+          phoneNumber: _phoneNumberController.text,
+          schoolKey: 'HUFLIT',
+          schoolYear: _schoolYearController.text,
+          gender: getGender(),
+          imageUrl: _imageURL.text,
+          numberID: _numberIDController.text,
+        ),
+      );
+
+      if (response == "ok") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginWidget()),
+        );
+      } else {
+        _showErrorDialog(
+            'Đăng ký thất bại, vui lòng kiểm tra lại thông tin đăng ký');
+      }
+    } catch (e) {
+      _showErrorDialog(
+          "Đăng ký thất bại, vui lòng kiểm tra lại thông tin đăng ký");
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Thông báo"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Đóng"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   getGender() {
@@ -70,20 +108,18 @@ class _RegisterWidgetState extends State<RegisterWidget> {
             hintText: label,
             fillColor: Colors.white,
             filled: true,
-            prefixIcon: Icon(icon, color: Colors.blue), // Biểu tượng bên trái
+            prefixIcon: Icon(icon, color: Colors.blue),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25.0),
-              borderSide: BorderSide.none, // Không có viền bên ngoài
+              borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25.0),
-              borderSide: BorderSide(
-                  color: Colors.blueGrey.shade300), // Viền khi không có focus
+              borderSide: BorderSide(color: Colors.blueGrey.shade300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25.0),
-              borderSide:
-                  const BorderSide(color: Colors.blue), // Viền khi có focus
+              borderSide: const BorderSide(color: Colors.blue),
             ),
           ),
         ),
@@ -103,8 +139,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
             fit: BoxFit.cover,
           ),
           Container(
-            color: const Color.fromARGB(255, 102, 133, 160)
-                .withOpacity(0.5), // Lớp màu xanh trắng mờ
+            color: const Color.fromARGB(255, 102, 133, 160).withOpacity(0.5),
           ),
           SingleChildScrollView(
             child: Column(
@@ -124,7 +159,15 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       SizedBox(
                         width: 370,
                         child: textField(_accountController,
-                            'Nhập tài khoản', Icons.account_circle),
+                            'Nhập tên đăng nhập', Icons.account_circle),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      SizedBox(
+                        width: 370,
+                        child: textField(_numberIDController,
+                            'Nhập mã số tài khoản', Icons.code),
                       ),
                       const SizedBox(
                         height: 24,
@@ -150,14 +193,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         child: textField(_fullNameController,
                             'Nhập họ và tên...', Icons.person),
                       ),
-                      // const SizedBox(
-                      //   height: 24,
-                      // ),
-                      // SizedBox(
-                      //   width: 370,
-                      //   child: textField(_numberIDController,
-                      //       'Nhập email', Icons.card_membership),
-                      // ),
                       const SizedBox(
                         height: 24,
                       ),
@@ -177,19 +212,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       const SizedBox(
                         height: 24,
                       ),
-                      // SizedBox(
-                      //   width: 370,
-                      //   child: textField(_schoolYearController,
-                      //       'Nhập năm học...', Icons.school),
-                      // ),
-                      // const SizedBox(
-                      //   height: 24,
-                      // ),
-                      // SizedBox(
-                      //   width: 370,
-                      //   child: textField(_schoolKeyController,
-                      //       'Nhập mã trường...', Icons.school),
-                      // ),
+                      SizedBox(
+                        width: 370,
+                        child: textField(_schoolYearController, 'Nhập năm học',
+                            Icons.date_range),
+                      ),
                       const SizedBox(
                         height: 24,
                       ),
@@ -280,14 +307,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () async {
-                            String respone = await register();
-                            if (respone == "ok") {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginWidget()));
-                            } else {}
+                            await register(); // Calls the register function and handles success/error internally
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,

@@ -122,8 +122,6 @@ class _ProductAddState extends State<ProductAdd> {
         });
       }
       _catIdController.text = widget.productModel!.categoryId.toString();
-
-      // Set the image if available
     }
     if (widget.isUpdate) {
       titleText = "Update Product";

@@ -5,14 +5,14 @@ import 'package:flutter_application_smartshop/page/Product/productdetailwidget.d
 import 'package:intl/intl.dart';
 import '../../data/sqlite.dart';
 
-class FavoriteWidget extends StatefulWidget {
-  const FavoriteWidget({super.key});
+class FavoriteDetail extends StatefulWidget {
+  const FavoriteDetail({super.key});
 
   @override
-  State<FavoriteWidget> createState() => _FavoriteWidgetState();
+  State<FavoriteDetail> createState() => _FavoriteDetailState();
 }
 
-class _FavoriteWidgetState extends State<FavoriteWidget> {
+class _FavoriteDetailState extends State<FavoriteDetail> {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Future<List<Favorite>> _getProducts() async {
@@ -22,10 +22,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Danh sách yêu thích'),
-        backgroundColor: Colors.blue,
-      ),
       body: Column(
         children: [
           Expanded(
@@ -43,7 +39,8 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
-                    child: Text('Bạn chưa có sản phẩm nào trong danh sách yêu thích'),
+                    child: Text(
+                        'Bạn chưa có sản phẩm nào trong danh sách yêu thích'),
                   );
                 }
                 return Padding(
@@ -83,7 +80,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                   imageUrl: pro.img,
                   price: pro.price,
                   description: pro.des,
-                  categoryName: '', 
+                  categoryName: '',
                   categoryId: 0, // Add category if needed
                 ),
               ),

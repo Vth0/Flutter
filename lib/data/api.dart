@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:dio/dio.dart';
-import 'package:flutter_application_smartshop/page/Profile/changepassword.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/bill.dart';
@@ -99,7 +98,7 @@ class APIRepository {
   Future<List<Category>> getCategory(String accountID, String token) async {
     try {
       Response res = await api.sendRequest.get(
-          '/Category/getList?accountID=$accountID',
+          '/Category/getList?accountID=21DH114505',
           options: Options(headers: header(token)));
       return res.data
           .map((e) => Category.fromJson(e))
@@ -117,7 +116,7 @@ class APIRepository {
         'name': data.name,
         'description': data.desc,
         'imageURL': data.imageUrl,
-        'accountID': accountID
+        'accountID': '21DH114505'
       });
       Response res = await api.sendRequest.post('/addCategory',
           options: Options(headers: header(token)), data: body);
@@ -141,7 +140,7 @@ class APIRepository {
         'name': data.name,
         'description': data.desc,
         'imageURL': data.imageUrl,
-        'accountID': accountID
+        'accountID': '21DH114505'
       });
       Response res = await api.sendRequest.put('/updateCategory',
           options: Options(headers: header(token)), data: body);
@@ -303,14 +302,13 @@ class APIRepository {
     }
   }
 
-  Future<List<BillDetailModel>> getHistoryDetail(
-      String billID, String token) async {
+  Future<List<BillDetail>> getHistoryDetail(String billID, String token) async {
     try {
       Response res = await api.sendRequest.post('/Bill/getByID?billID=$billID',
           options: Options(headers: header(token)));
       return res.data
-          .map((e) => BillDetailModel.fromJson(e))
-          .cast<BillDetailModel>()
+          .map((e) => BillDetail.fromJson(e))
+          .cast<BillDetail>()
           .toList();
     } catch (ex) {
       print(ex);
@@ -374,41 +372,42 @@ class APIRepository {
   }
 
   Future<bool> updateProfile(User user, String token) async {
-  try {
-    final body = FormData.fromMap({
-      "numberID": user.idNumber,
-      "fullName": user.fullName,
-      "phoneNumber": user.phoneNumber,
-      "imageURL": user.imageURL,
-      "birthDay": user.birthDay,
-      "gender": user.gender,
-      "schoolYear": '2024',
-      "schoolKey": 'K27',
-    });
+    try {
+      final body = FormData.fromMap({
+        "numberID": user.idNumber,
+        "fullName": user.fullName,
+        "phoneNumber": user.phoneNumber,
+        "imageURL": user.imageURL,
+        "birthDay": user.birthDay,
+        "gender": user.gender,
+        "schoolYear": '2024',
+        "schoolKey": 'K27',
+      });
 
-    Response res = await api.sendRequest.put(
-      '/Auth/updateProfile',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      ),
-      data: body,
-    );
+      Response res = await api.sendRequest.put(
+        '/Auth/updateProfile',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+        data: body,
+      );
 
-    if (res.statusCode == 200) {
-      print("ok");
-      return true;
-    } else {
-      print("fail");
-      return false;
+      if (res.statusCode == 200) {
+        print("ok");
+        return true;
+      } else {
+        print("fail");
+        return false;
+      }
+    } catch (ex) {
+      print(ex);
+      rethrow;
     }
-  } catch (ex) {
-    print(ex);
-    rethrow;
   }
-}
-Future<String> changePassword(
+
+  Future<String> changePassword(
       String oldPass, String newpass, String confirmPass, String token) async {
     try {
       final body = FormData.fromMap({
@@ -419,18 +418,17 @@ Future<String> changePassword(
       Response res = await api.sendRequest.put(
         '/Auth/ChangePassword',
         options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      ),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
         data: body,
       );
       // Kiểm tra response từ API
       if (res.statusCode == 200) {
         return "Password reset successful";
       } else {
-        String errorMessage =
-            "Change password failed.";
+        String errorMessage = "Change password failed.";
         print(errorMessage);
         return errorMessage;
       }

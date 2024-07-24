@@ -61,21 +61,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       }
 
       // Tạo đối tượng User
-      User user = User(
-        idNumber: '2XDHXXXXXX',
-        accountId: null,
-        fullName: _fullNameController.text,
-        phoneNumber: _phoneNumberController.text,
-        imageURL: _imageController.text,
-        birthDay: _birthDayController.text,
-        gender: _genderController.text,
-        schoolYear: '2024',
-        schoolKey: 'K27',
-        dateCreated: DateTime.now().toIso8601String(),
-        status: true,
-      );
+      User user = User.userEmpty();
 
-      // Gọi API để cập nhật hồ sơ
       bool result = await APIRepository().updateProfile(user, token);
 
       Flushbar(
@@ -181,18 +168,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 ),
               ),
             ),
-            // const SizedBox(height: 16.0),
-            // TextField(
-            //   controller: _emailController,
-            //   decoration: InputDecoration(
-            //     hintText: 'Email...',
-            //     fillColor: Colors.white,
-            //     filled: true,
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(25.0),
-            //     ),
-            //   ),
-            // ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _isLoading ? null : _updateProfile,
@@ -205,12 +180,15 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                   fontWeight: FontWeight.bold,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(25.0),
                 ),
               ),
               child: _isLoading
                   ? const CircularProgressIndicator()
-                  : const Text('LƯU'),
+                  : const Text(
+                      'Lưu',
+                      style: TextStyle(color: Colors.white),
+                    ),
             ),
           ],
         ),
