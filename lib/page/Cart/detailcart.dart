@@ -160,8 +160,13 @@ class _DetailcartState extends State<Detailcart> {
                         IconButton(
                           onPressed: () {
                             setState(() {
+                              if (product.count < 2) {
+                                _databaseHelper.deleteProduct(product);
+                                setState(() {});
+                              }
                               _databaseHelper.minus(product);
                             });
+                            setState(() {});
                           },
                           icon: const Icon(
                             Icons.remove_circle_outline,

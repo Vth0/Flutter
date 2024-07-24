@@ -64,7 +64,7 @@ class DatabaseHelper {
 
   Future<void> minus(Cart product) async {
     final db = await database;
-    if (product.count > 1) product.count--;
+    if (product.count >= 1) product.count--;
     await db.update(
       'Cart',
       product.toMap(),
@@ -84,12 +84,12 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> deleteProduct(int id) async {
+  Future<void> deleteProduct(Cart product) async {
     final db = await database;
     await db.delete(
       'Cart',
       where: 'productID = ?',
-      whereArgs: [id],
+      whereArgs: [product.productID],
     );
   }
 
