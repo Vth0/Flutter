@@ -25,7 +25,7 @@ class _CategoryListState extends State<CategoryList> {
               )
               .then((_) => setState(() {}));
         },
-        tooltip: 'Add New',
+        tooltip: 'Thêm mới',
         child: const Icon(Icons.add),
       ),
     );

@@ -98,7 +98,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                           : const CircularProgressIndicator();
                     },
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error, color: Colors.red);
+                      return Image.asset(
+                        product.imageUrl,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        },
+                      );
                     },
                   ),
                 )
