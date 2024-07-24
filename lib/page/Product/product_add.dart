@@ -1,9 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors, avoid_print
 
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/api.dart';
@@ -26,36 +25,60 @@ class _ProductAddState extends State<ProductAdd> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _desController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _imgController = TextEditingController();
   final TextEditingController _catIdController = TextEditingController();
 
-  String? _imagePath;
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
+  List<String> productImages = [];
+  String selectedImage = '';
   String titleText = "";
 
-  Future<void> _getImageFromGallery() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-        _imagePath = image.path; 
-      });
-    }
+  void _showImagePicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: 300,
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+              ),
+              itemCount: productImages.length,
+              itemBuilder: (context, index) {
+                final image = productImages[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _imgController.text = image;
+                      selectedImage = image;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(image),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _onSave() async {
     final name = _nameController.text;
     final des = _desController.text;
     final price = double.parse(_priceController.text);
-    final img = _imagePath;
+    final img = _imgController.text;
     final catId = _catIdController.text;
     var pref = await SharedPreferences.getInstance();
     await APIRepository().addProduct(
         Product(
             id: 0,
             name: name,
-            imageUrl: img ?? '',
+            imageUrl: img,
             categoryId: int.parse(catId),
             categoryName: '',
             price: price,
@@ -69,7 +92,7 @@ class _ProductAddState extends State<ProductAdd> {
     final name = _nameController.text;
     final des = _desController.text;
     final price = double.parse(_priceController.text);
-    final img = _imagePath;
+    final img = _imgController.text;
     final catId = _catIdController.text;
     var pref = await SharedPreferences.getInstance();
     //update
@@ -77,7 +100,7 @@ class _ProductAddState extends State<ProductAdd> {
         Product(
             id: widget.productModel!.id,
             name: name,
-            imageUrl: img ?? '',
+            imageUrl: img,
             categoryId: int.parse(catId),
             categoryName: '',
             price: price,
@@ -111,6 +134,7 @@ class _ProductAddState extends State<ProductAdd> {
   void initState() {
     super.initState();
     _getCategories();
+    _loadProductImages();
 
     if (widget.productModel != null && widget.isUpdate) {
       _nameController.text = widget.productModel!.name;
@@ -118,7 +142,8 @@ class _ProductAddState extends State<ProductAdd> {
       _priceController.text = widget.productModel!.price.toString();
       if (widget.productModel!.imageUrl.isNotEmpty) {
         setState(() {
-          _image = File(widget.productModel!.imageUrl);
+          _imgController.text = widget.productModel!.imageUrl.toString();
+          selectedImage = widget.productModel!.imageUrl;
         });
       }
       _catIdController.text = widget.productModel!.categoryId.toString();
@@ -128,6 +153,16 @@ class _ProductAddState extends State<ProductAdd> {
     } else {
       titleText = "Add New Product";
     }
+  }
+
+  Future<void> _loadProductImages() async {
+    final manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+    const productsDir = 'assets/images/products/';
+    productImages = manifestMap.keys
+        .where((String key) => key.startsWith(productsDir))
+        .toList();
   }
 
   @override
@@ -176,25 +211,36 @@ class _ProductAddState extends State<ProductAdd> {
               ),
               const SizedBox(height: 20),
               Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: 175,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: _getImageFromGallery,
-                      child: Text('Select Image'),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _imgController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Select image',
+                      ),
                     ),
                   ),
-                  SizedBox(width: 20),
-                  SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: _image == null
-                        ? Placeholder()
-                        : Image.file(_image!, fit: BoxFit.cover),
+                  const SizedBox(width: 8.0),
+                  ElevatedButton(
+                    onPressed: () => _showImagePicker(context),
+                    child: Text(selectedImage.isEmpty
+                        ? 'Select image'
+                        : 'Change image'),
                   ),
                 ],
               ),
+              const SizedBox(height: 16.0),
+              if (selectedImage.isNotEmpty) ...[
+                Center(
+                  child: Image.asset(
+                    selectedImage,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              ],
               const SizedBox(height: 20),
               const Text(
                 'Desciption:',

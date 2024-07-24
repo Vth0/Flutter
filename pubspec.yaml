@@ -33,4 +33,5 @@ flutter:
   assets:
     - assets/images/
     - assets/images/products/
+    - assets/images/categories/
     # - assets/files/
